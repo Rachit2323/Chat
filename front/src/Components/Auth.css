@@ -1,0 +1,143 @@
+.signup_container {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+}
+
+.left_side_content {
+  height: 100%;
+  display: flex;
+  width: 50%;
+}
+.left_side_content > img {
+  width: 100%;
+  height: 100%;
+}
+
+.right_side_content {
+  display: flex;
+  padding: 25px;
+  justify-content: center;
+  width: 50%;
+  align-items: center;
+  flex-direction: column;
+  background: #fffcfc;
+}
+
+.right_side_content > section {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+  width: 50%;
+  gap: 15px;
+  padding: 20px;
+}
+.right_side_content > section > button {
+  cursor: pointer;
+  width: 100%;
+  padding: 10px;
+  font-size: 12px;
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  font-weight: 600;
+  color: black;
+  display: flex;
+  background: transparent;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid rgb(47, 45, 45);
+  border-radius: 10px;
+}
+.right_side_content > section > button:hover{
+    background-color: black;
+    color: white;
+}
+
+.right_side_content > section > button > svg {
+  position: absolute;
+  left: 8px;
+  width: 15px;
+  height: 16px;
+
+}
+
+.right_side_content > h2 {
+  font-size: 18px;
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  font-weight: 600;
+  width: 50%;
+  display: flex;
+  align-items: flex-start;
+  color: black;
+}
+
+.right_side_content >section >span{
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.right_side_content >section> span>label{
+    font-size: bold;
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+    font-weight: 300;
+    font-size: 14px;
+    color: black;
+}
+.right_side_content >section >span > input{
+ outline: none;
+ padding: 9px;
+ border: 1px solid rgb(69, 69, 69);
+
+ border-radius: 4px;
+}
+
+.right_side_content > button{
+    cursor: pointer;
+    width: 50%;
+    padding: 10px;
+    font-size: 12px;
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+    font-weight: 600;
+    color: black;
+    display: flex;
+    background: transparent;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid rgb(47, 45, 45);
+    border-radius: 10px;
+}
+
+
+.right_side_content > button:hover{
+    background-color: red;
+    color: white;
+}
+
+.right_side_content > span{
+    width: 50%;
+    font-size: 12px;
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+    font-weight: 600;
+    color: black;
+    padding-top: 10px;
+
+}
+
+.right_side_content >span> strong{
+    font-size: 12px;
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+    font-weight: 600;
+    color: red;
+    cursor: pointer;
+
+
+}
+
+.right_side_content >span> strong:hover{
+    color: rgb(143, 16, 16);
+}

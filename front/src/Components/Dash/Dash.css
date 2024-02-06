@@ -1,0 +1,380 @@
+.dash_container_outer {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+.left_all_profile {
+  width: 25%;
+  display: flex;
+  border: 1px solid #eee;
+}
+
+.setting_profile {
+  width: 18%;
+  padding: 40% 20px;
+  justify-content: space-between;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  background-color: white;
+  border-right: 1px solid rgb(106, 106, 106);
+}
+
+.setting_profile > svg {
+  cursor: pointer;
+  color: green;
+  width: 30px;
+  height: 35px;
+}
+
+.setting_profile > svg:hover {
+  color: rgb(0, 255, 0);
+}
+
+.setting_profile > section {
+  display: flex;
+  gap: 25px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.setting_profile > section > svg {
+  cursor: pointer;
+  color: green;
+  width: 30px;
+  height: 35px;
+}
+
+.setting_profile > section > svg:hover {
+  color: rgb(0, 255, 0);
+}
+
+.setting_profile > section > img {
+  border-radius: 50%;
+  width: 30px;
+  height: 35px;
+  transition: transform 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+.setting_profile > section > img:hover {
+  transform: scale(1.5);
+}
+
+.all_profile {
+  padding: 18% 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  width: 100%;
+
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.all_profile > h3 {
+  color: #000;
+  font-family: "SF Pro Text";
+  font-size: 23px;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.all_profile > input {
+  width: 100%;
+  padding: 9px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  background: #dbdbdb;
+  border-radius: 5px;
+  font-size: 14px;
+  color: #2d2d2d;
+  outline: none;
+  border: none;
+}
+
+.all_profile > input:focus {
+  outline: none;
+  border-color: dodgerblue;
+}
+
+.all_profile > span {
+  color: rgba(0, 0, 0, 0.65);
+  font-family: "SF Pro Display";
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 400;
+}
+
+.all_profile > span > strong {
+  color: var(--Blue-2, #2d9cdb);
+  font-family: "SF Pro Display";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  cursor: pointer;
+}
+.profile_name_section {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 14px;
+}
+.profile_name_section > section {
+  display: flex;
+  gap: 20px;
+  justify-content: flex-start;
+  align-items: center;
+  cursor: pointer;
+}
+.profile_name_section > section > img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.profile_name_section > section > span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.profile_name_section > section > span > h5 {
+  color: rgba(0, 0, 0, 0.85);
+  font-family: "SF Pro Display";
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 500;
+}
+
+.profile_name_section > section > span > p {
+  color: rgba(0, 0, 0, 0.45);
+  font-family: "SF Pro Display";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+}
+
+.profile_name_section > section > strong {
+  display: flex;
+}
+
+.profile_name_section > section > strong > p {
+  color: rgba(0, 0, 0, 0.65);
+  font-family: "SF Pro Display";
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+}
+
+.right_all_message {
+  background: #fafafa;
+  width: 75%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.right_top_bar {
+  border-bottom: 1px solid rgb(194, 194, 194);
+  padding: 15px 25px;
+  display: flex;
+  background: white;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.right_top_bar > section {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  gap: 7px;
+  padding: 1px 10px;
+
+}
+
+.right_top_bar > section >svg{
+  cursor: pointer;
+  color: rgb(175, 150, 40);
+  width: 30px;
+  height: 30px;
+}
+
+.right_top_bar > section >span> img {
+  width: 42px;
+  height: 42px;
+}
+
+.right_top_bar > section > span {
+  display: flex;
+
+  gap: 5px;
+}
+
+.right_top_bar > section > span >strong{
+display: flex;
+flex-direction: column;
+}
+
+
+.right_top_bar > section > span >strong> h4 {
+  color: rgba(0, 0, 0, 0.85);
+  font-family: "SF Pro Display";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+}
+
+.right_top_bar > section > span >strong> p {
+  color: var(--Green-2, #27ae60);
+  font-family: "SF Pro Display";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+}
+
+.message_section {
+  display: flex;
+  height: 85%;
+  padding: 8px;
+}
+
+
+.message_section > section{
+display: flex;
+flex-direction: column;
+justify-content: flex-end;
+
+}
+
+.input_message {
+  display: flex;
+  width: 100%;
+  box-sizing: border-box;
+  justify-content: center;
+  align-items: center;
+  padding: 4px 10px;
+  gap: 10px;
+  border-top: 1px solid rgb(182, 182, 182);
+}
+
+.input_message > input {
+  width: 100%;
+  padding: 9px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  background: #dbdbdb;
+  border-radius: 5px;
+  font-size: 14px;
+  color: #2d2d2d;
+  outline: none;
+  border: none;
+}
+
+.input_message > svg {
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+}
+
+svg {
+  cursor: pointer;
+}
+
+.complete_section_for_group {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.chat-box {
+  border: 1px solid #ccc;
+  padding: 20px;
+  width: 300px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: column;
+  position: relative;
+}
+
+.chat-box > h2 {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.input-group {
+  margin-bottom: 15px;
+  width: 90%;
+}
+
+.input-group > input {
+  padding: 5px 10px;
+  margin-top: 5px;
+  outline: none;
+  border: none;
+  width: 100%;
+  background: #d8d7d7;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.chat-box > button {
+  display: flex;
+  cursor: pointer;
+  padding: 3px 8px;
+  background: #27ae60;
+  border: 2px solid green;
+  border-radius: 10%;
+  outline: none;
+  color: white;
+}
+
+.chat-box > button:hover {
+  background: #0d5e2f;
+}
+
+.user-suggestions {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  border-radius: 5px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  max-height: 150px;
+  overflow-y: auto;
+  position: absolute;
+  top: 75%;
+  width: 30%;
+}
+
+.user-suggestions li {
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.user-suggestions li:hover {
+  background-color: #f0f0f0;
+}
+
+.message_section >section>span{
+  background: green;
+  color: white;
+  padding: 8px;
+  border: 2px solid green;
+  border-radius: 4px;
+}

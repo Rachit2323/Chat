@@ -1,0 +1,200 @@
+import React, { useEffect, useState } from "react";
+import "./Dash.css";
+import "./Message.css";
+import { IoCloseSharp } from "react-icons/io5";
+import { CiLink } from "react-icons/ci";
+import { IoSendSharp } from "react-icons/io5";
+import fake from "../../Image/fake.png";
+import { IoIosInformationCircle } from "react-icons/io";
+import { IoCloseOutline } from "react-icons/io5";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  RemoveusercreateGroup,
+  AddusercreateGroup,
+  sendMesageToBack,
+  fetchAllChat,
+} from "../../Reducers/Chat.js";
+import io from "socket.io-client";
+const END = "http://localhost:4000";
+var socket;
+const Message = ({ userList }) => {
+  const {
+    fetchChatSuccess,
+    allchat,
+    allUser,
+    allUserSuccess,
+    createGroupData,
+    createGroupSuccess,
+  } = useSelector((state) => state.chat);
+  console.log("user", userList);
+  const userConnected = localStorage.getItem("token");
+  const [socketConnectd, setSocketConnected] = useState(false);
+  useEffect(() => {
+    socket = io(END);
+    console.log("token", userConnected);
+    socket.emit("setup", userConnected);
+    socket.on("connection", () => setSocketConnected(true));
+  }, []);
+
+  const [chatId, setChatId] = useState(null);
+  const [user, setUser] = useState("");
+  const [selectedUsers, setSelectedUsers] = useState([]);
+  const [selectedUsersId, setSelectedUsersId] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [showUserList, setShowUserList] = useState(false);
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    if (userList) {
+      setChatId(userList._id);
+    }
+  }, [userList]);
+
+  const sendMessageToEnd = () => {
+    dispatch(sendMesageToBack({ content: message, chatId }));
+    setMessage("");
+  };
+  useEffect(() => {
+    console.log("running");
+    dispatch(fetchAllChat(chatId));
+  }, [chatId]);
+
+  const [groupInformationShow, setGroupInformationShow] = useState(false);
+
+  const groupInformation = () => {
+    setGroupInformationShow(true);
+  };
+  const dispatch = useDispatch();
+  const handlecloseModal = () => {
+    setGroupInformationShow(false);
+  };
+
+  const handleUserRemove = (userId) => {
+    dispatch(RemoveusercreateGroup({ userId, chatId }));
+  };
+
+  const AddUserGroup = (userId) => {
+    console.log(userId, selectedUsersId);
+
+    dispatch(AddusercreateGroup({ userId: selectedUsersId, chatId }));
+  };
+
+  const handleUserInputChange = (e) => {
+    const input = e.target.value;
+    setUser(input);
+    setFilteredUsers(
+      allUser
+        .map((user) => user.name)
+        .filter((name) => name.toLowerCase().includes(input.toLowerCase()))
+    );
+    setShowUserList(true);
+  };
+
+  useEffect(() => {
+    setFilteredUsers(allUser.map((user) => user.name));
+  }, [allUser]);
+
+  const handleInputClick = () => {
+    setShowUserList(true);
+  };
+
+  const handleUserSelection = (selectedUser) => {
+    const selectedUserData = allUser.find((user) => user.name === selectedUser);
+    setSelectedUsers([...selectedUsers, selectedUser]);
+    setSelectedUsersId([...selectedUsersId, selectedUserData._id]);
+    setFilteredUsers(filteredUsers.filter((name) => name !== selectedUser));
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Backspace") {
+      const lastSelectedUser = selectedUsers[selectedUsers.length - 1];
+      if (lastSelectedUser) {
+        setSelectedUsers(selectedUsers.slice(0, -1));
+        setSelectedUsersId(selectedUsersId.slice(0, -1));
+        setFilteredUsers([...filteredUsers, lastSelectedUser]);
+      } else {
+        setUser(user.slice(0, -1));
+      }
+    }
+  };
+
+  return (
+    <div className="right_all_message">
+      <div className="right_top_bar">
+        <section>
+          <span>
+            <img src={fake} />
+            <strong>
+              <h4>{userList.chatName}</h4>
+              <p>Online</p>
+            </strong>
+          </span>
+          <IoIosInformationCircle onClick={() => groupInformation()} />
+        </section>
+
+        <IoCloseSharp />
+      </div>
+      <div className="message_section">
+        <section>
+          {" "}
+          <span>HI I am here</span>
+        </section>
+      </div>
+      <div className="input_message">
+        <CiLink style={{ color: "rgba(0, 0, 0, 0.45)" }} />
+        <input
+          placeholder="Type your Message here ..."
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+        />
+
+        <IoSendSharp
+          style={{ color: "green" }}
+          onClick={() => sendMessageToEnd()}
+        />
+      </div>
+      {groupInformationShow && (
+        <div className="information_table_outer">
+          <span onClick={() => handlecloseModal()}>
+            <IoCloseOutline />
+          </span>
+
+          <label htmlFor="members">Members:</label>
+          <div className="members">
+            {userList.users.map((user, index) => (
+              <div key={index} className="member">
+                <span>{user.name}</span>
+                <button onClick={() => handleUserRemove(user._id)}>X</button>
+              </div>
+            ))}
+          </div>
+          <label htmlFor="addUser">Add User:</label>
+          <input
+            type="text"
+            id="addUser"
+            placeholder="Enter username"
+            value={selectedUsers.join(", ")}
+            onChange={handleUserInputChange}
+            onClick={() => handleInputClick()}
+            onKeyDown={handleKeyDown}
+          />
+          <button onClick={() => AddUserGroup(user)}>Update</button>
+          {showUserList && (
+            <ul className="user-suggestions">
+              {filteredUsers.map((filteredUser, index) => (
+                <li
+                  key={index}
+                  onClick={() => handleUserSelection(filteredUser)}
+                >
+                  {filteredUser}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Message;
