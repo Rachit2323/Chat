@@ -76,7 +76,7 @@ const createGroupChat = async (req, res) => {
 
   var users = req.body.selectedUsersId;
 
-  console.log("user", users);
+
 
   users.push(req.userId);
 
@@ -162,7 +162,7 @@ const addToGroup = async (req, res) => {
   const { chatId, userId } = req.body;
 
   // check if the requester is admin
-  console.log(chatId, userId)
+
 
   const added = await Chat.findByIdAndUpdate(
     chatId,

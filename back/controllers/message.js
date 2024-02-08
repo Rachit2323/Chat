@@ -4,7 +4,7 @@ const Message = require("../models/message.js");
 
 const allMessages = async (req, res) => {
   try {
-    console.log("ruk", req.query);
+
     const messages = await Message.find({ chat: req.query.chatId })
       .populate("sender", "name pic email")
       .populate("chat");
@@ -40,7 +40,7 @@ const sendMessage = async (req, res) => {
     });
 
     await Chat.findByIdAndUpdate(req.body.chatId, { latestMessage: message });
-    console.log("messa", message);
+
     res.json({ data: message, success: true });
   } catch (error) {
     res.status(400);

@@ -17,6 +17,8 @@ import {
 import { userInfo } from "../../Reducers/auth.js";
 import io from "socket.io-client";
 import ScrollableFeed from "react-scrollable-feed";
+import { useNavigate } from "react-router-dom";
+import EmptyScreen from "./Emptyscreen.js";
 const END = "http://localhost:4000";
 var socket;
 const Message = ({ userList }) => {
@@ -37,6 +39,8 @@ const Message = ({ userList }) => {
     dispatch(userInfo());
   }, []);
   const [allUserMessage, setAllUserMessage] = useState([]);
+
+  const naviagte = useNavigate();
 
   useEffect(() => {
     if (fetchMessageSuccess) {
@@ -66,43 +70,27 @@ const Message = ({ userList }) => {
     }
   }, [userList]);
 
-  const sendMessageToEnd = async () => {
-    try {
-      dispatch(sendMesageToBack({ content: message, chatId }));
-      setMessage("");
-      
-    } catch (error) {
-      // Handle any errors that might occur during the dispatch or socket.emit process
-      console.error("Error:", error);
-    }
+  const sendMessageToEnd = () => {
+    dispatch(sendMesageToBack({ content: message, chatId }));
+    setMessage("");
   };
-  useEffect(()=>{
-   if(sendMesageToBackSuccess)
-   {
-    console.log('new message', sendMesageToBackData);
-      
+  useEffect(() => {
+    if (sendMesageToBackSuccess) {
       socket.emit("new message", sendMesageToBackData);
-   }
-
-  },[sendMesageToBackSuccess])
+    }
+  }, [sendMesageToBackSuccess]);
 
   useEffect(() => {
-    console.log("running");
     dispatch(fetchAllChat(chatId));
     socket.emit("join chat", chatId);
   }, [chatId]);
 
-  useEffect(()=>{
-    socket.on('message recived',(newMessage)=>{
-      console.log('new messa',newMessage)
-      // setMessage([...message,newMessage]);
+  useEffect(() => {
+    socket.on("message recived", (newMessage) => {
       dispatch(fetchAllChat(chatId));
-      setAllUserMessage([...allUserMessage,newMessage]);
-      console.log("alluser",allUserMessage);
-    })
-  })
-
-
+      setAllUserMessage([...allUserMessage, newMessage]);
+    });
+  });
 
   const [groupInformationShow, setGroupInformationShow] = useState(false);
 
@@ -119,8 +107,6 @@ const Message = ({ userList }) => {
   };
 
   const AddUserGroup = (userId) => {
-    console.log(userId, selectedUsersId);
-
     dispatch(AddusercreateGroup({ userId: selectedUsersId, chatId }));
   };
 
@@ -163,99 +149,116 @@ const Message = ({ userList }) => {
     }
   };
 
+  const [closeMessagesWindow, setCloseMessageWindow] = useState(true);
+
+  const closeMessages = () => {
+    setCloseMessageWindow(false);
+  };
+
   return (
-    <div className="right_all_message">
-      <div className="right_top_bar">
-        <section>
-          <span>
-            <img src={fake} />
-            <strong>
-              <h4>{userList.chatName}</h4>
-              <p>Online</p>
-            </strong>
-          </span>
-          <IoIosInformationCircle onClick={() => groupInformation()} />
-        </section>
+    <>
+      {closeMessagesWindow ? (
+        <div className="right_all_message">
+          <div className="right_top_bar">
+            <section>
+              <span>
+                <img src={fake} />
+                <strong>
+                  <h4>{userList.chatName}</h4>
+                  <p>Online</p>
+                </strong>
+              </span>
+              <IoIosInformationCircle onClick={() => groupInformation()} />
+            </section>
 
-        <IoCloseSharp />
-      </div>
-      <div className="message_section">
-        <ScrollableFeed className="message_alligned" >
-          {allUserMessage.map((message) => (
-            <div
-              key={message._id}
-              style={{
-                backgroundColor:
-                  message.sender?._id === userdetail._id ? "green" : "skyblue",
-                border:
-                  message.sender?._id === userdetail._id
-                    ? "2px solid green"
-                    : "2 px solid skyblue",
-                marginLeft:
-                  message.sender?._id === userdetail._id ? "86%" : "1%",
-                
-              }}
-              className="message_send"
-            >
-              {message.content}
-            </div>
-          ))}
-        </ScrollableFeed>
-      </div>
-      <div className="input_message">
-        <CiLink style={{ color: "rgba(0, 0, 0, 0.45)" }} />
-        <input
-          placeholder="Type your Message here ..."
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-        />
-
-        <IoSendSharp
-          style={{ color: "green" }}
-          onClick={() => sendMessageToEnd()}
-        />
-      </div>
-      {groupInformationShow && (
-        <div className="information_table_outer">
-          <span onClick={() => handlecloseModal()}>
-            <IoCloseOutline />
-          </span>
-
-          <label htmlFor="members">Members:</label>
-          <div className="members">
-            {userList.users.map((user, index) => (
-              <div key={index} className="member">
-                <span>{user.name}</span>
-                <button onClick={() => handleUserRemove(user._id)}>X</button>
-              </div>
-            ))}
+            <IoCloseSharp onClick={() => closeMessages()} />
           </div>
-          <label htmlFor="addUser">Add User:</label>
-          <input
-            type="text"
-            id="addUser"
-            placeholder="Enter username"
-            value={selectedUsers.join(", ")}
-            onChange={handleUserInputChange}
-            onClick={() => handleInputClick()}
-            onKeyDown={handleKeyDown}
-          />
-          <button onClick={() => AddUserGroup(user)}>Update</button>
-          {showUserList && (
-            <ul className="user-suggestions">
-              {filteredUsers.map((filteredUser, index) => (
-                <li
-                  key={index}
-                  onClick={() => handleUserSelection(filteredUser)}
+          <div className="message_section">
+            <ScrollableFeed className="message_alligned">
+              {allUserMessage.map((message) => (
+                <div
+                  key={message._id}
+                  style={{
+                    backgroundColor:
+                      message.sender?._id === userdetail._id
+                        ? "green"
+                        : "skyblue",
+                    border:
+                      message.sender?._id === userdetail._id
+                        ? "2px solid green"
+                        : "2 px solid skyblue",
+                    marginLeft:
+                      message.sender?._id === userdetail._id ? "86%" : "1%",
+                  }}
+                  className="message_send"
                 >
-                  {filteredUser}
-                </li>
+                  {message.content}
+                </div>
               ))}
-            </ul>
+            </ScrollableFeed>
+          </div>
+          <div className="input_message">
+            <CiLink style={{ color: "rgba(0, 0, 0, 0.45)" }} />
+            <input
+              placeholder="Type your Message here ..."
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+            />
+
+            <IoSendSharp
+              style={{ color: "green" }}
+              onClick={() => sendMessageToEnd()}
+            />
+          </div>
+          {groupInformationShow && (
+            <div className="information_table_outer">
+              <span onClick={() => handlecloseModal()}>
+                <IoCloseOutline />
+              </span>
+
+              <label htmlFor="members">Members:</label>
+              <div className="members">
+                {userList.users.map((user, index) => (
+                  <div key={index} className="member">
+                    <span>{user.name}</span>
+                    <button onClick={() => handleUserRemove(user._id)}>
+                      X
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <label htmlFor="addUser">Add User:</label>
+              <input
+                type="text"
+                id="addUser"
+                placeholder="Enter username"
+                value={selectedUsers.join(", ")}
+                onChange={handleUserInputChange}
+                onClick={() => handleInputClick()}
+                onKeyDown={handleKeyDown}
+              />
+              <button onClick={() => AddUserGroup(user)}>Update</button>
+              {showUserList && (
+                <ul className="user-suggestions">
+                  {filteredUsers.map((filteredUser, index) => (
+                    <li
+                      key={index}
+                      onClick={() => handleUserSelection(filteredUser)}
+                    >
+                      {filteredUser}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           )}
         </div>
+      ) : (
+        <>
+          <EmptyScreen />
+        </>
       )}
-    </div>
+    </>
   );
 };
 

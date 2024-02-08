@@ -242,21 +242,18 @@
   height: 100%;
   padding: 8px;
   max-height: 640px;
-
 }
 
 .message_alligned {
   width: 100%;
   display: flex;
-
   flex-direction: column;
-  justify-content: flex-end;
   gap: 2px;
-  /* overflow-y: auto; */
-
-
 }
 
+.message_alligned::-webkit-scrollbar {
+  width: 0;
+}
 
 .input_message {
   display: flex;
@@ -300,6 +297,7 @@ svg {
 }
 
 .chat-box {
+  background: beige;
   border: 1px solid #ccc;
   padding: 20px;
   width: 300px;

@@ -12,7 +12,8 @@ import { fetchChat } from "../../Reducers/Chat.js";
 import { IoCloseOutline } from "react-icons/io5";
 import { allUserList, createGroup } from "../../Reducers/Chat.js";
 import Message from "./Message.js";
-import {userInfo} from "../../Reducers/auth.js"
+import { userInfo } from "../../Reducers/auth.js";
+import EmptyScreen from "./Emptyscreen.js";
 
 const Dash = () => {
   const [allChat, setAllChat] = useState([]);
@@ -139,7 +140,9 @@ const Dash = () => {
                   onClick={() => selectedChat(index, chat)}
                   style={{
                     backgroundColor:
-                      selectedChatIndex === index ? "skyblue" : "white",
+                     selectedChatIndex === index
+                        ? "skyblue"
+                        : "white",
                     padding: "5px",
                     borderRadius: "5px",
                   }}
@@ -158,7 +161,7 @@ const Dash = () => {
           </div>
         </div>
 
-        {messageSection && <Message userList={userSelected} />}
+        {messageSection && <Message userList={userSelected} /> }
 
         {grouptChatName && (
           <div className="complete_section_for_group">

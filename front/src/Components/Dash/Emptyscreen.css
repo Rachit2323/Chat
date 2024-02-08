@@ -1,0 +1,15 @@
+.empty_screen{
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
+
+.empty_screen > h1{
+    color: #000;
+    font-family: "SF Pro Text";
+    font-size: 23px;
+    font-style: normal;
+    font-weight: 700;
+}
