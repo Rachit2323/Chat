@@ -120,7 +120,7 @@ const authSlice = createSlice({
         if (action.payload.error) {
           state.successsignin = action.payload.success;
         } else {
-          state.userdetail = action.payload.message;
+          state.userdetail = action.payload.data;
           state.userInfoSuccess = action.payload.success;
         }
       })

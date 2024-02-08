@@ -81,7 +81,7 @@ const Dash = () => {
   };
 
   useEffect(() => {
-    setFilteredUsers(allUser.map((user) => user.name));
+    setFilteredUsers(allUser?.map((user) => user.name));
   }, [allUser]);
 
   const handleInputClick = () => {

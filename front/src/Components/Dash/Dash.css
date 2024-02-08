@@ -196,17 +196,16 @@
   align-items: center;
   gap: 7px;
   padding: 1px 10px;
-
 }
 
-.right_top_bar > section >svg{
+.right_top_bar > section > svg {
   cursor: pointer;
   color: rgb(175, 150, 40);
   width: 30px;
   height: 30px;
 }
 
-.right_top_bar > section >span> img {
+.right_top_bar > section > span > img {
   width: 42px;
   height: 42px;
 }
@@ -217,13 +216,12 @@
   gap: 5px;
 }
 
-.right_top_bar > section > span >strong{
-display: flex;
-flex-direction: column;
+.right_top_bar > section > span > strong {
+  display: flex;
+  flex-direction: column;
 }
 
-
-.right_top_bar > section > span >strong> h4 {
+.right_top_bar > section > span > strong > h4 {
   color: rgba(0, 0, 0, 0.85);
   font-family: "SF Pro Display";
   font-size: 16px;
@@ -231,7 +229,7 @@ flex-direction: column;
   font-weight: 500;
 }
 
-.right_top_bar > section > span >strong> p {
+.right_top_bar > section > span > strong > p {
   color: var(--Green-2, #27ae60);
   font-family: "SF Pro Display";
   font-size: 14px;
@@ -245,12 +243,13 @@ flex-direction: column;
   padding: 8px;
 }
 
-
-.message_section > section{
-display: flex;
-flex-direction: column;
-justify-content: flex-end;
-
+.message_alligned {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 2px;
+  height: 100%;
 }
 
 .input_message {
@@ -371,10 +370,10 @@ label {
   background-color: #f0f0f0;
 }
 
-.message_section >section>span{
-  background: green;
+.message_send {
+width: 10%;
   color: white;
   padding: 8px;
-  border: 2px solid green;
+
   border-radius: 4px;
 }

@@ -14,8 +14,9 @@ import {
   sendMesageToBack,
   fetchAllChat,
 } from "../../Reducers/Chat.js";
-import {userInfo} from "../../Reducers/auth.js";
+import { userInfo } from "../../Reducers/auth.js";
 import io from "socket.io-client";
+import ScrollableFeed from "react-scrollable-feed";
 const END = "http://localhost:4000";
 var socket;
 const Message = ({ userList }) => {
@@ -26,22 +27,26 @@ const Message = ({ userList }) => {
     allUserSuccess,
     createGroupData,
     createGroupSuccess,
+    fetchChats,
+    fetchMessageSuccess,
   } = useSelector((state) => state.chat);
 
-
-  useEffect(()=>{
-  dispatch(userInfo());
-  },[])
-  const { userInfoSuccess, userdetail } = useSelector((state) => state.user);
-
-
-
-  const [socketConnectd, setSocketConnected] = useState(false);
+  useEffect(() => {
+    dispatch(userInfo());
+  }, []);
+  const [allUserMessage, setAllUserMessage] = useState([]);
 
   useEffect(() => {
-    console.log("userdata", userdetail);
-   socket = io(END);
-    console.log("token", userdetail);
+    if (fetchMessageSuccess) {
+      setAllUserMessage(fetchChats);
+    }
+  }, [fetchMessageSuccess]);
+  const { userInfoSuccess, userdetail } = useSelector((state) => state.user);
+
+  const [socketConnectd, setSocketConnected] = useState(false);
+  console.log(userdetail);
+  useEffect(() => {
+    socket = io(END);
     socket.emit("setup", userdetail);
     socket.on("connection", () => setSocketConnected(true));
   }, [userInfoSuccess]);
@@ -128,6 +133,7 @@ const Message = ({ userList }) => {
     }
   };
 
+
   return (
     <div className="right_all_message">
       <div className="right_top_bar">
@@ -145,10 +151,20 @@ const Message = ({ userList }) => {
         <IoCloseSharp />
       </div>
       <div className="message_section">
-        <section>
-          {" "}
-          <span>HI I am here</span>
-        </section>
+    
+        <ScrollableFeed className="message_alligned" style={{ height:'100%' }}>
+          {allUserMessage.map((message) => (
+
+            <div key={message._id}  style={{ 
+              backgroundColor: message.sender?._id === userdetail._id ? "green" : "skyblue",
+              border: message.sender?._id === userdetail._id ? "2px solid green" : "2 px solid skyblue",
+              marginLeft: message.sender?._id === userdetail._id ? "86%" : "1%"
+            }} className="message_send">
+              {message.content}
+            </div>
+
+          ))}
+        </ScrollableFeed>
       </div>
       <div className="input_message">
         <CiLink style={{ color: "rgba(0, 0, 0, 0.45)" }} />
