@@ -70,8 +70,6 @@ const fetchChats = async (req, res) => {
 
 
 const createGroupChat = async (req, res) => {
-
-
   if (!req.body.selectedUsersId || !req.body.chatName) {
     return res.status(400).send({ message: "Please Fill all the feilds" });
   }

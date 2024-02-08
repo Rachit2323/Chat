@@ -177,10 +177,27 @@ exports.allUsers = async (req, res) => {
   try {
     const users = await User.find();
 
-    res.send({data:users,success:true});
+    res.send({ data: users, success: true });
   } catch (error) {
     console.error("Error fetching users:", error);
     res.status(500).send({ error: "Internal Server Error" });
+  }
+};
+
+exports.userInformation = async (req, res) => {
+  try {
+    const userId = req.userId;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+   console.log("user",user);
+    res.status(200).json({ data: user, success: true });
+  } catch (error) {
+    console.error("Error fetching user information:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 

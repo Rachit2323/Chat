@@ -14,6 +14,7 @@ import {
   sendMesageToBack,
   fetchAllChat,
 } from "../../Reducers/Chat.js";
+import {userInfo} from "../../Reducers/auth.js";
 import io from "socket.io-client";
 const END = "http://localhost:4000";
 var socket;
@@ -26,15 +27,24 @@ const Message = ({ userList }) => {
     createGroupData,
     createGroupSuccess,
   } = useSelector((state) => state.chat);
-  console.log("user", userList);
-  const userConnected = localStorage.getItem("token");
+
+
+  useEffect(()=>{
+  dispatch(userInfo());
+  },[])
+  const { userInfoSuccess, userdetail } = useSelector((state) => state.user);
+
+
+
   const [socketConnectd, setSocketConnected] = useState(false);
+
   useEffect(() => {
-    socket = io(END);
-    console.log("token", userConnected);
-    socket.emit("setup", userConnected);
+    console.log("userdata", userdetail);
+   socket = io(END);
+    console.log("token", userdetail);
+    socket.emit("setup", userdetail);
     socket.on("connection", () => setSocketConnected(true));
-  }, []);
+  }, [userInfoSuccess]);
 
   const [chatId, setChatId] = useState(null);
   const [user, setUser] = useState("");

@@ -12,6 +12,7 @@ import { fetchChat } from "../../Reducers/Chat.js";
 import { IoCloseOutline } from "react-icons/io5";
 import { allUserList, createGroup } from "../../Reducers/Chat.js";
 import Message from "./Message.js";
+import {userInfo} from "../../Reducers/auth.js"
 
 const Dash = () => {
   const [allChat, setAllChat] = useState([]);
@@ -34,11 +35,12 @@ const Dash = () => {
     createGroupSuccess,
   } = useSelector((state) => state.chat);
 
-
+  const { userInfoSuccess, userdetail } = useSelector((state) => state.user);
 
   useEffect(() => {
     dispatch(fetchChat());
     dispatch(allUserList());
+    dispatch(userInfo());
   }, []);
 
   useEffect(() => {

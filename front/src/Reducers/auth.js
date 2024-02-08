@@ -9,6 +9,8 @@ const initialState = {
   errorsignin: "",
   successsignin: false,
   successsignup: false,
+  userInfoSuccess:false,
+  userdetail:[]
 };
 
 export const signupUser = createAsyncThunk("signupuser", async (body) => {
@@ -43,6 +45,26 @@ export const signinUser = createAsyncThunk("signinuser", async (body) => {
     const { token } = data;
 
     localStorage.setItem("token", token);
+
+    return data;
+  } catch (error) {
+    return { error: error.message }; // Handle network or other errors
+  }
+});
+
+export const userInfo = createAsyncThunk("userInfo", async (body) => {
+  try {
+    const token = localStorage.getItem('token');
+    const result = await fetch(`${API}users/userinfo`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}` 
+      },
+
+    });
+
+    const data = await result.json();
 
     return data;
   } catch (error) {
@@ -91,7 +113,27 @@ const authSlice = createSlice({
       .addCase(signinUser.rejected, (state) => {
         state.loading = true;
         state.successsignin = false;
-      });
+      })
+      .addCase(userInfo.fulfilled, (state, action) => {
+        state.loading = false;
+
+        if (action.payload.error) {
+          state.successsignin = action.payload.success;
+        } else {
+          state.userdetail = action.payload.message;
+          state.userInfoSuccess = action.payload.success;
+        }
+      })
+      .addCase(userInfo.pending, (state) => {
+        state.loading = true;
+        state.userInfoSuccess = false;
+      })
+      .addCase(userInfo.rejected, (state) => {
+        state.loading = true;
+        state.userInfoSuccess = false;
+      })
+
+      
   },
 });
 

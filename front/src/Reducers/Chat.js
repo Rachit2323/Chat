@@ -219,22 +219,23 @@ const chatSlice = createSlice({
         state.loading = true;
         state.fetchChatSuccess = false;
       })
-      .addCase(allUserList.fulfilled, (state, action) => {
-        state.loading = false;
-
-        if (action.payload.error) {
-          state.loading = true;
-          state.allUserSuccess = action.payload.success;
-        } else {
-          state.loading = false;
-          state.allUserSuccess = action.payload.success;
-          state.allUser = action.payload.data;
-        }
-      })
       .addCase(allUserList.pending, (state) => {
         state.loading = true;
         state.allUserSuccess = false;
       })
+      .addCase(allUserList.fulfilled, (state, action) => {
+        state.loading = false;
+
+        if (action?.payload?.error) {
+          state.loading = true;
+          state.allUserSuccess = action.payload.success;
+        } else {
+          state.loading = false;
+          state.allUserSuccess = action?.payload?.success;
+          state.allUser = action?.payload?.data;
+        }
+      })
+     
       .addCase(allUserList.rejected, (state) => {
         state.loading = true;
         state.allUserSuccess = false;
@@ -259,22 +260,23 @@ const chatSlice = createSlice({
         state.loading = true;
         state.createGroupSuccess = false;
       })
-      .addCase(fetchAllChat.fulfilled, (state, action) => {
-        state.loading = false;
-
-        if (action.payload.error) {
-          state.loading = true;
-          state.fetchMessageSuccess = action.payload.success;
-        } else {
-          state.loading = false;
-          state.fetchMessageSuccess = action.payload.success;
-          state.fetchChats = action.payload.data;
-        }
-      })
       .addCase(fetchAllChat.pending, (state) => {
         state.loading = true;
         state.fetchMessageSuccess = false;
       })
+      .addCase(fetchAllChat.fulfilled, (state, action) => {
+        state.loading = false;
+
+        if (action?.payload?.error) {
+          state.loading = true;
+          state.fetchMessageSuccess = action.payload.success;
+        } else {
+          state.loading = false;
+          state.fetchMessageSuccess = action?.payload?.success;
+          state.fetchChats = action?.payload?.data;
+        }
+      })
+     
       .addCase(fetchAllChat.rejected, (state) => {
         state.loading = true;
         state.fetchMessageSuccess = false;
