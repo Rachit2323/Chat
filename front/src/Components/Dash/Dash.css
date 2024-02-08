@@ -239,18 +239,24 @@
 
 .message_section {
   display: flex;
-  height: 85%;
+  height: 100%;
   padding: 8px;
+  max-height: 640px;
+
 }
 
 .message_alligned {
   width: 100%;
   display: flex;
+
   flex-direction: column;
   justify-content: flex-end;
   gap: 2px;
-  height: 100%;
+  /* overflow-y: auto; */
+
+
 }
+
 
 .input_message {
   display: flex;
@@ -371,7 +377,7 @@ label {
 }
 
 .message_send {
-width: 10%;
+  width: 10%;
   color: white;
   padding: 8px;
 

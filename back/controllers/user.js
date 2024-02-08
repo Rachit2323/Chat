@@ -193,7 +193,7 @@ exports.userInformation = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-   console.log("user",user);
+
     res.status(200).json({ data: user, success: true });
   } catch (error) {
     console.error("Error fetching user information:", error);

@@ -58,9 +58,27 @@ const io=require("socket.io")(server,{
 io.on("connection",(socket)=>{
   console.log("connected to socket.io");
 
-  socket.on('setup',(userdetail)=>{
-    // socket.join(userData._id);
-    console.log(userdetail);
+  socket.on('setup',(userData)=>{
+    socket.join(userData._id);
     socket.emit('connected')
+  })
+
+  socket.on('join chat',(room)=>{
+    socket.join(room);
+    console.log("joined room",room)
+    socket.emit('connected')
+  })
+
+  socket.on('new message',(newMessage)=>{
+    var chat=newMessage.chat;
+
+    // if(!chat.users)
+    // {
+    //   return console.log("chat.user not defined")
+    // }
+    chat.users.forEach(user=>{
+      // if(user._id===newMessage.sender._id) return;
+      socket.in(user._id).emit("message recived",newMessage)
+    })
   })
 })

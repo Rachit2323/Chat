@@ -29,6 +29,8 @@ const Message = ({ userList }) => {
     createGroupSuccess,
     fetchChats,
     fetchMessageSuccess,
+    sendMesageToBackData,
+    sendMesageToBackSuccess,
   } = useSelector((state) => state.chat);
 
   useEffect(() => {
@@ -44,7 +46,6 @@ const Message = ({ userList }) => {
   const { userInfoSuccess, userdetail } = useSelector((state) => state.user);
 
   const [socketConnectd, setSocketConnected] = useState(false);
-  console.log(userdetail);
   useEffect(() => {
     socket = io(END);
     socket.emit("setup", userdetail);
@@ -65,14 +66,43 @@ const Message = ({ userList }) => {
     }
   }, [userList]);
 
-  const sendMessageToEnd = () => {
-    dispatch(sendMesageToBack({ content: message, chatId }));
-    setMessage("");
+  const sendMessageToEnd = async () => {
+    try {
+      dispatch(sendMesageToBack({ content: message, chatId }));
+      setMessage("");
+      
+    } catch (error) {
+      // Handle any errors that might occur during the dispatch or socket.emit process
+      console.error("Error:", error);
+    }
   };
+  useEffect(()=>{
+   if(sendMesageToBackSuccess)
+   {
+    console.log('new message', sendMesageToBackData);
+      
+      socket.emit("new message", sendMesageToBackData);
+   }
+
+  },[sendMesageToBackSuccess])
+
   useEffect(() => {
     console.log("running");
     dispatch(fetchAllChat(chatId));
+    socket.emit("join chat", chatId);
   }, [chatId]);
+
+  useEffect(()=>{
+    socket.on('message recived',(newMessage)=>{
+      console.log('new messa',newMessage)
+      // setMessage([...message,newMessage]);
+      dispatch(fetchAllChat(chatId));
+      setAllUserMessage([...allUserMessage,newMessage]);
+      console.log("alluser",allUserMessage);
+    })
+  })
+
+
 
   const [groupInformationShow, setGroupInformationShow] = useState(false);
 
@@ -133,7 +163,6 @@ const Message = ({ userList }) => {
     }
   };
 
-
   return (
     <div className="right_all_message">
       <div className="right_top_bar">
@@ -151,18 +180,25 @@ const Message = ({ userList }) => {
         <IoCloseSharp />
       </div>
       <div className="message_section">
-    
-        <ScrollableFeed className="message_alligned" style={{ height:'100%' }}>
+        <ScrollableFeed className="message_alligned" >
           {allUserMessage.map((message) => (
-
-            <div key={message._id}  style={{ 
-              backgroundColor: message.sender?._id === userdetail._id ? "green" : "skyblue",
-              border: message.sender?._id === userdetail._id ? "2px solid green" : "2 px solid skyblue",
-              marginLeft: message.sender?._id === userdetail._id ? "86%" : "1%"
-            }} className="message_send">
+            <div
+              key={message._id}
+              style={{
+                backgroundColor:
+                  message.sender?._id === userdetail._id ? "green" : "skyblue",
+                border:
+                  message.sender?._id === userdetail._id
+                    ? "2px solid green"
+                    : "2 px solid skyblue",
+                marginLeft:
+                  message.sender?._id === userdetail._id ? "86%" : "1%",
+                
+              }}
+              className="message_send"
+            >
               {message.content}
             </div>
-
           ))}
         </ScrollableFeed>
       </div>

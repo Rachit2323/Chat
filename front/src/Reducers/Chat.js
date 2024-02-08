@@ -12,6 +12,8 @@ const initialState = {
   createGroupData:[],
   fetchChats:[],
   fetchMessageSuccess:false,
+  sendMesageToBackSuccess:false,
+  sendMesageToBackData:[]
 };
 
 export const fetchChat = createAsyncThunk("fetchChat", async (body, thunkAPI) => {
@@ -140,7 +142,6 @@ export const fetchChat = createAsyncThunk("fetchChat", async (body, thunkAPI) =>
 
   export const sendMesageToBack = createAsyncThunk("sendMesageToBack", async ({ content ,chatId}) => {
     try {
-      console.log(content,chatId)
       const token = localStorage.getItem('token');
       const result = await fetch(`${API}message/`, {
         method: "POST",
@@ -156,6 +157,7 @@ export const fetchChat = createAsyncThunk("fetchChat", async (body, thunkAPI) =>
       }
   
       const data = await result.json();
+      console.log('data',data);
   
       return data;
     } catch (error) {
@@ -281,6 +283,29 @@ const chatSlice = createSlice({
         state.loading = true;
         state.fetchMessageSuccess = false;
       })
+      .addCase(sendMesageToBack.pending, (state) => {
+        state.loading = true;
+        state.sendMesageToBackSuccess = false;
+      })
+      .addCase(sendMesageToBack.fulfilled, (state, action) => {
+        state.loading = false;
+
+        if (action?.payload?.error) {
+          state.loading = true;
+          state.sendMesageToBackSuccess = action.payload.success;
+        } else {
+          state.loading = false;
+          state.sendMesageToBackSuccess = action?.payload?.success;
+          state.sendMesageToBackData = action?.payload?.data;
+        }
+      })
+     
+      .addCase(sendMesageToBack.rejected, (state) => {
+        state.loading = true;
+        state.sendMesageToBackSuccess = false;
+      })
+
+
 
 
       
