@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import img1 from "../Image/bg.jpeg";
 import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
-import { useDispatch ,useSelector} from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { signinUser } from "../Reducers/auth.js";
 
 const Signup = () => {
@@ -13,7 +13,6 @@ const Signup = () => {
     email: "",
     password: "",
   });
-
 
   const { successsignin } = useSelector((state) => state.user);
 
@@ -31,13 +30,11 @@ const Signup = () => {
 
   const handleSubmit = () => {
     dispatch(signinUser(formData));
-
   };
 
-  useEffect(()=>{
-   if(successsignin)
-   navigate('/dash');
-  },[successsignin])
+  useEffect(() => {
+    if (successsignin) navigate("/dash");
+  }, [successsignin]);
 
   return (
     <>
@@ -47,7 +44,9 @@ const Signup = () => {
         </div>
 
         <div className=" flex flex-col items-center justify-center w-1/2 bg-white p-8">
-          <h2 className="text-xl font-semibold mb-4">Sign in to the Chat App</h2>
+          <h2 className="text-xl font-semibold mb-4">
+            Sign in to the Chat App
+          </h2>
           <section className="w-full">
             <button className="flex items-center w-full py-2 px-4 border border-gray-700 rounded-lg mb-4">
               <FcGoogle className="mr-2" />
@@ -78,13 +77,20 @@ const Signup = () => {
               />
             </span>
           </section>
-          <button onClick={handleSubmit} className="w-full py-2 px-4 border border-gray-700 rounded-lg bg-transparent text-black mb-4">
+          <button
+            onClick={handleSubmit}
+            className={`mt-3 w-full py-2 px-4 border border-gray-700 rounded-lg bg-transparent text-black mb-4 `}
+            style={{ ":hover": { backgroundColor: "#ff0000" } }}
+          >
             Submit
           </button>
 
           <span className="w-full text-xs font-semibold text-black">
             Not a Member?{" "}
-            <strong onClick={() => handleSignin()} className="text-red-600 cursor-pointer hover:text-red-800">
+            <strong
+              onClick={() => handleSignin()}
+              className="text-red-600 cursor-pointer hover:text-red-800"
+            >
               Signup Now
             </strong>
           </span>

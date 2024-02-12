@@ -15,6 +15,7 @@ import { userInfo } from "../../Reducers/auth.js";
 import { accessChat } from "../../Reducers/Chat.js";
 
 import io from "socket.io-client";
+import { useNavigate } from "react-router-dom";
 const END = "http://localhost:4000";
 var socket;
 
@@ -38,6 +39,8 @@ const Dash = () => {
     allUser,
     allUserSuccess,
     createGroupData,
+    accessChatData,
+    accessChatSuccess,
     createGroupSuccess,
   } = useSelector((state) => state.chat);
 
@@ -51,7 +54,7 @@ const Dash = () => {
 
   useEffect(() => {
     if (fetchChatSuccess) {
-      console.log("chats", allChat);
+
       setAllChat(allchat);
     }
   }, [fetchChatSuccess]);
@@ -68,6 +71,7 @@ const Dash = () => {
   const [searchUser, setSearchUser] = useState(false);
 
   const selectedChat = (index, chat) => {
+
     setSelectedChatIndex(index);
 
     setUserSelected(chat);
@@ -123,7 +127,6 @@ const Dash = () => {
   };
 
   const handleUserSearch = (value) => {
-
     const filtered = allUser.filter(
       (user) =>
         user.name.toLowerCase().includes(value.toLowerCase()) ||
@@ -134,14 +137,31 @@ const Dash = () => {
 
   const handleMakeChat = (userId) => {
     dispatch(accessChat(userId));
+    dispatch(fetchChat());
+    // setAllChat(allchat);
+    
   };
 
+  useEffect(()=>{
+   if(accessChatSuccess)
+   {
+    setAllChat([...allChat,accessChatData]);
+    setSearchUser(false);
+    selectedChat(allChat.length,accessChatData)
+   }
+  },[accessChatSuccess])
   const handleChange = (e) => {
     setSearchTerm(e.target.value);
     handleUserSearch(e.target.value);
     setSearchUser(!searchUser);
   };
 
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/");
+  };
 
   return (
     <>
@@ -157,13 +177,14 @@ const Dash = () => {
                 src={fake}
                 className="w-10 h-10 rounded-full cursor-pointer transform transition-transform hover:scale-110"
               />
-
-              <IoHomeOutline className="w-[30px] h-[30px] cursor-pointer" />
-              <FaRegMessage className="w-[30px] h-[30px] cursor-pointer" />
-            </div>
-            <div className="flex justify-between flex-col gap-5">
               <IoSettingsOutline className="w-[30px] h-[30px] cursor-pointer" />
-              <CiLogout className="w-[30px] h-[30px] cursor-pointer" />
+              <CiLogout
+                className="w-[30px] h-[30px] cursor-pointer"
+                onClick={() => handleLogout()}
+              />
+
+              {/* <IoHomeOutline className="w-[30px] h-[30px] cursor-pointer" />
+              <FaRegMessage className="w-[30px] h-[30px] cursor-pointer" /> */}
             </div>
           </div>
 
@@ -179,15 +200,18 @@ const Dash = () => {
               />
               {searchUser && (
                 <ul className="absolute top-[68%] bg-gray-100 border w-[89%] border-gray-300 divide-y divide-gray-300 rounded py-1 px-1  cursor-pointer text-sm">
-                  {filteredUsersSearch.map((user) => (
-                    <li
-                      key={user._id}
-                      className="py-1"
-                      onClick={() => handleMakeChat(user._id)}
-                    >
-                      {user.name} - {user.email}
-                    </li>
-                  ))}
+                  {filteredUsersSearch.map(
+                    (user) =>
+                      userdetail._id !== user._id && (
+                        <li
+                          key={user._id}
+                          className="py-1"
+                          onClick={() => handleMakeChat(user._id)}
+                        >
+                          {user.name} - {user.email}
+                        </li>
+                      )
+                  )}
                 </ul>
               )}
 

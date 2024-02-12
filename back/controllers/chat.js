@@ -26,7 +26,7 @@ const accessChat = async (req, res) => {
   });
 
   if (isChat.length > 0) {
-    res.send(isChat[0]);
+    res.send({data:isChat[0],success:true});
   } else {
     var chatData = {
       chatName: "sender",
@@ -40,7 +40,7 @@ const accessChat = async (req, res) => {
         "users",
         "-password"
       );
-      res.status(200).json(FullChat);
+      res.status(200).json({data:FullChat,success:true});
     } catch (error) {
       res.status(400);
       throw new Error(error.message);

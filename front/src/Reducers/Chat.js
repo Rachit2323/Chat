@@ -13,7 +13,9 @@ const initialState = {
   fetchChats:[],
   fetchMessageSuccess:false,
   sendMesageToBackSuccess:false,
-  sendMesageToBackData:[]
+  sendMesageToBackData:[],
+  accessChatSuccess:false,
+  accessChatData:[]
 };
 
 
@@ -333,11 +335,27 @@ const chatSlice = createSlice({
         state.loading = true;
         state.sendMesageToBackSuccess = false;
       })
+      .addCase(accessChat.pending, (state) => {
+        state.loading = true;
+        state.accessChatSuccess = false;
+      })
+      .addCase(accessChat.fulfilled, (state, action) => {
+        state.loading = false;
 
-
-
-
-      
+        if (action?.payload?.error) {
+          state.loading = true;
+          state.sendMesageToBackSuccess = action.payload.success;
+        } else {
+          state.loading = false;
+          state.accessChatSuccess = action?.payload?.success;
+          state.accessChatData = action?.payload?.data;
+        }
+      })
+     
+      .addCase(accessChat.rejected, (state) => {
+        state.loading = true;
+        state.accessChatSuccess = false;
+      })      
       
   },
 });

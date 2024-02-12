@@ -85,7 +85,7 @@ const Signup = () => {
               />
             </span>
           </section>
-          <button onClick={handleSubmit} className="w-1/2 py-2 px-4 border border-gray-700 rounded-lg bg-transparent text-black mb-4">
+          <button onClick={handleSubmit} className="mt-3 w-full py-2 px-4 border border-gray-700 rounded-lg bg-transparent text-black mb-4 hover:bg-red">
             Submit
           </button>
 
