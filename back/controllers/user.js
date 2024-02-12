@@ -27,13 +27,12 @@ const sendMail = (name, email, id) => {
       }
     });
   } catch (error) {
-    console.log(error);
+
   }
 };
 
 exports.signup = async (req, res) => {
   try {
-    console.log(req.body);
 
     const { username, email, password } = req.body;
 
@@ -97,7 +96,7 @@ exports.signup = async (req, res) => {
       });
     }
   } catch (error) {
-    console.log(error);
+
     res.status(500).json({
       success: false,
       error: "An error occurred while registering the user",

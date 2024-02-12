@@ -12,7 +12,11 @@ import { IoCloseOutline } from "react-icons/io5";
 import { allUserList, createGroup } from "../../Reducers/Chat.js";
 import Message from "./Message.js";
 import { userInfo } from "../../Reducers/auth.js";
-import EmptyScreen from "./Emptyscreen.js";
+import { accessChat } from "../../Reducers/Chat.js";
+
+import io from "socket.io-client";
+const END = "http://localhost:4000";
+var socket;
 
 const Dash = () => {
   const [allChat, setAllChat] = useState([]);
@@ -24,6 +28,8 @@ const Dash = () => {
   const [user, setUser] = useState("");
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [selectedUsersId, setSelectedUsersId] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredUsersSearch, setFilteredUsersSearch] = useState([]);
 
   const dispatch = useDispatch();
   const {
@@ -45,15 +51,23 @@ const Dash = () => {
 
   useEffect(() => {
     if (fetchChatSuccess) {
+      console.log("chats", allChat);
       setAllChat(allchat);
     }
   }, [fetchChatSuccess]);
 
+  const [socketConnectd, setSocketConnected] = useState(false);
+  useEffect(() => {
+    socket = io(END);
+    socket.emit("setup", userdetail);
+    socket.on("connection", () => setSocketConnected(true));
+  }, [userInfoSuccess]);
+
   const [messageSection, setMessageSection] = useState(false);
   const [userSelected, setUserSelected] = useState(null);
+  const [searchUser, setSearchUser] = useState(false);
 
   const selectedChat = (index, chat) => {
-    console.log("chat", chat);
     setSelectedChatIndex(index);
 
     setUserSelected(chat);
@@ -108,11 +122,32 @@ const Dash = () => {
     }
   };
 
+  const handleUserSearch = (value) => {
+
+    const filtered = allUser.filter(
+      (user) =>
+        user.name.toLowerCase().includes(value.toLowerCase()) ||
+        user.email.toLowerCase().includes(value.toLowerCase())
+    );
+    setFilteredUsersSearch(filtered);
+  };
+
+  const handleMakeChat = (userId) => {
+    dispatch(accessChat(userId));
+  };
+
+  const handleChange = (e) => {
+    setSearchTerm(e.target.value);
+    handleUserSearch(e.target.value);
+    setSearchUser(!searchUser);
+  };
+
+
   return (
     <>
       <div className="flex w-screen h-screen fixed">
         <div className="w-1/4 border-r border-gray-200 flex ">
-          <div className="p-4 h-full flex flex-col items-center justify-center w-1/3 border-r border-gray-400">
+          <div className="p-4 h-full flex flex-col items-center justify-center w-1/4 border-r border-gray-400">
             <div className="flex items-center w-full h-full gap-4 flex-col mb-4 mt-4 justify-center ">
               <TiGroupOutline
                 className="w-[30px] h-[30px] cursor-pointer"
@@ -132,38 +167,57 @@ const Dash = () => {
             </div>
           </div>
 
-          <div className="flex flex-col h-full ">
-            <div className="p-4 flex flex-col">
-              <h3 className="text-lg font-semibold mb-2">Messages</h3>
+          <div className="flex flex-col h-full w-3/4">
+            <div className="p-4 flex flex-col relative">
+              <h3 className="text-lg font-semibold mb-2">Chats</h3>
               <input
                 type="text"
                 className="w-full py-2 px-4 border border-gray-300 rounded mb-2"
                 placeholder="Search"
+                value={searchTerm}
+                onChange={handleChange}
               />
+              {searchUser && (
+                <ul className="absolute top-[68%] bg-gray-100 border w-[89%] border-gray-300 divide-y divide-gray-300 rounded py-1 px-1  cursor-pointer text-sm">
+                  {filteredUsersSearch.map((user) => (
+                    <li
+                      key={user._id}
+                      className="py-1"
+                      onClick={() => handleMakeChat(user._id)}
+                    >
+                      {user.name} - {user.email}
+                    </li>
+                  ))}
+                </ul>
+              )}
+
               <span className="text-sm text-gray-500">
                 Sort by: <strong className="text-blue-500">Newest</strong>
               </span>
             </div>
-            <div className="p-4">
+            <div className="p-2">
               <div className="flex flex-col gap-4">
                 {allChat.map((chat, index) => (
                   <div
                     key={index}
-                    className={`p-4 cursor-pointer ${
+                    className={`p-2 flex rounded items-center justify-center gap-2 cursor-pointer ${
                       selectedChatIndex === index ? "bg-blue-100" : ""
                     }`}
                     onClick={() => selectedChat(index, chat)}
                   >
-                    <img src={fake} className="w-10 h-10 rounded-full" />
-                    <div>
-                      <h5 className="text-lg font-semibold">
+                    <img
+                      src={fake}
+                      className="w-[65px] h-[65px] rounded-full"
+                    />
+                    <div className="w-1/2">
+                      <h5 className="text-xl font-semibold">
                         {chat?.chatName}
                       </h5>
-                      <p className="text-gray-500">
+                      <p className="text-lg text-gray-500">
                         {chat?.latestMessage?.content}
                       </p>
                     </div>
-                    <strong className="text-gray-500">
+                    <strong className="w-1/4 text-gray-500">
                       {chat?.createdAt?.slice(11, 16)}
                     </strong>
                   </div>

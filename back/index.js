@@ -13,7 +13,14 @@ const cors = require("cors");
 
 app.use(express.json());
 
-app.use(cors());
+const corsOptions ={
+  origin:'http://localhost:3000', 
+  credentials:true,          
+  optionSuccessStatus:200,
+}
+
+app.use(cors(corsOptions))
+
 
 // cloudinary.v2.config({
 //   cloud_name: "dyedquiym",
@@ -32,8 +39,7 @@ app.get("/", (req, res) => {
 
 mongoose
   .connect("mongodb://localhost:27017/chat", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
+
   })
   .then(() => {
     console.log("Connected to MongoDB");
@@ -81,4 +87,8 @@ io.on("connection",(socket)=>{
       socket.in(user._id).emit("message recived",newMessage)
     })
   })
+
+  // socket.off("setup",()=>{
+  //   socket.leave(userData._id);
+  // })
 })

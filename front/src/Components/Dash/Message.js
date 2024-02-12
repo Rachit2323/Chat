@@ -36,6 +36,7 @@ const Message = ({ userList }) => {
   useEffect(() => {
     dispatch(userInfo());
   }, []);
+
   const [allUserMessage, setAllUserMessage] = useState([]);
 
   const naviagte = useNavigate();
@@ -156,7 +157,7 @@ const Message = ({ userList }) => {
   return (
     <>
       {closeMessagesWindow ? (
-        <div className="bg-white rounded-lg shadow-md p-4 w-full h-full relative">
+        <div className="bg-white rounded-lg shadow-md p-4 w-3/4 h-full relative">
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center">
               <img src={fake} className="w-8 h-8 mr-2" alt="User" />
@@ -165,9 +166,12 @@ const Message = ({ userList }) => {
                 <p>Online</p>
               </div>
             </div>
-            <IoIosInformationCircle onClick={() => groupInformation()} className=" cursor-pointer "/>
+            <IoIosInformationCircle
+              onClick={() => groupInformation()}
+              className="w-[30px] h-[30px] cursor-pointer "
+            />
           </div>
-          <div className="overflow-y-auto max-h-[635px] h-[100%] gap-3 flex w-full flex-col">
+          <div className="overflow-y-auto max-h-[635px] h-[100%] gap-3 flex w-full flex-col scrollbar-hide">
             <ScrollableFeed className="gap-2 flex flex-col border border-gray-300 pt-2">
               {allUserMessage.map((message) => (
                 <div
@@ -201,7 +205,7 @@ const Message = ({ userList }) => {
             />
           </div>
           {groupInformationShow && (
-          <div className="mt-4 p-4 bg-gray-200 rounded-lg absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <div className="mt-4 p-4 bg-gray-200 rounded-lg absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
               <span onClick={() => handlecloseModal()}>
                 <IoCloseOutline className=" cursor-pointer " />
               </span>

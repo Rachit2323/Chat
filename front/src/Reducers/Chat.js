@@ -16,6 +16,36 @@ const initialState = {
   sendMesageToBackData:[]
 };
 
+
+export const accessChat = createAsyncThunk("accessChat", async (userId) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API}chats/?userId=${userId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+
+    });
+
+    if (!response.ok) {
+      // Handle non-2xx responses
+      throw new Error("Failed to fetch chat data");
+    }
+
+    const data = await response.json();
+    console.log('Response:', data);
+    return data;
+  } catch (error) {
+    // Handle errors
+    console.error('Error:', error);
+    throw error;
+  }
+});
+
+
+
 export const fetchChat = createAsyncThunk("fetchChat", async (body, thunkAPI) => {
     try {
       const token = localStorage.getItem('token');
@@ -168,7 +198,6 @@ export const fetchChat = createAsyncThunk("fetchChat", async (body, thunkAPI) =>
   export const fetchAllChat = createAsyncThunk("fetchAllChat", async (chatId) => {
     try {
 
-      console.log('fechh',chatId)
       if(!chatId)
       return ;
       const token = localStorage.getItem('token');

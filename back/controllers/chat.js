@@ -2,7 +2,8 @@ const Chat = require("../models/chat.js");
 const User = require("../models/user.js");
 
 const accessChat = async (req, res) => {
-  const { userId } = req.body;
+
+  const  userId = req.query.userId;
 
   if (!userId) {
     console.log("UserId param not sent with request");
@@ -47,7 +48,6 @@ const accessChat = async (req, res) => {
   }
 };
 
-
 const fetchChats = async (req, res) => {
   try {
     Chat.find({ users: { $elemMatch: { $eq: req.userId } } })
@@ -60,7 +60,7 @@ const fetchChats = async (req, res) => {
           path: "latestMessage.sender",
           select: "name pic email",
         });
-        res.status(200).send({data:results,success:true});
+        res.status(200).send({ data: results, success: true });
       });
   } catch (error) {
     res.status(400);
@@ -68,15 +68,12 @@ const fetchChats = async (req, res) => {
   }
 };
 
-
 const createGroupChat = async (req, res) => {
   if (!req.body.selectedUsersId || !req.body.chatName) {
     return res.status(400).send({ message: "Please Fill all the feilds" });
   }
 
   var users = req.body.selectedUsersId;
-
-
 
   users.push(req.userId);
 
@@ -98,13 +95,12 @@ const createGroupChat = async (req, res) => {
       .populate("users", "-password")
       .populate("groupAdmin", "-password");
 
-    res.status(200).json({data:fullGroupChat,success:true});
+    res.status(200).json({ data: fullGroupChat, success: true });
   } catch (error) {
     res.status(400);
     throw new Error(error.message);
   }
 };
-
 
 const renameGroup = async (req, res) => {
   const { chatId, chatName } = req.body;
@@ -130,12 +126,8 @@ const renameGroup = async (req, res) => {
   }
 };
 
-
 const removeFromGroup = async (req, res) => {
   const { chatId, userId } = req.body;
-
-
-
 
   const removed = await Chat.findByIdAndUpdate(
     chatId,
@@ -157,12 +149,10 @@ const removeFromGroup = async (req, res) => {
   }
 };
 
-
 const addToGroup = async (req, res) => {
   const { chatId, userId } = req.body;
 
   // check if the requester is admin
-
 
   const added = await Chat.findByIdAndUpdate(
     chatId,
