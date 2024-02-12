@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import "./Dash.css";
 import { TiGroupOutline } from "react-icons/ti";
 import fake from "../../Image/fake.png";
 import { IoHomeOutline } from "react-icons/io5";
@@ -111,78 +110,97 @@ const Dash = () => {
 
   return (
     <>
-      <div className="dash_container_outer">
-        <div className="left_all_profile">
-          <div className="setting_profile">
-            <section>
-              <TiGroupOutline onClick={() => handleGroup()} />
-              <img src={fake} />
-              <IoHomeOutline />
-              <FaRegMessage />
-            </section>
+      <div className="flex w-screen h-screen fixed">
+        <div className="w-1/4 border-r border-gray-200 flex ">
+          <div className="p-4 h-full flex flex-col items-center justify-center w-1/3 border-r border-gray-400">
+            <div className="flex items-center w-full h-full gap-4 flex-col mb-4 mt-4 justify-center ">
+              <TiGroupOutline
+                className="w-[30px] h-[30px] cursor-pointer"
+                onClick={() => handleGroup()}
+              />
+              <img
+                src={fake}
+                className="w-10 h-10 rounded-full cursor-pointer transform transition-transform hover:scale-110"
+              />
 
-            <section>
-              <IoSettingsOutline />
-              <CiLogout />
-            </section>
+              <IoHomeOutline className="w-[30px] h-[30px] cursor-pointer" />
+              <FaRegMessage className="w-[30px] h-[30px] cursor-pointer" />
+            </div>
+            <div className="flex justify-between flex-col gap-5">
+              <IoSettingsOutline className="w-[30px] h-[30px] cursor-pointer" />
+              <CiLogout className="w-[30px] h-[30px] cursor-pointer" />
+            </div>
           </div>
-          <div className="all_profile">
-            <h3>Messages</h3>
-            <input type="text" placeholder="Search" />
-            <span>
-              Sort by: <strong>Newest</strong>
-            </span>
 
-            <div className="profile_name_section">
-              {allChat.map((chat, index) => (
-                <section
-                  key={index}
-                  onClick={() => selectedChat(index, chat)}
-                  style={{
-                    backgroundColor:
-                     selectedChatIndex === index
-                        ? "skyblue"
-                        : "white",
-                    padding: "5px",
-                    borderRadius: "5px",
-                  }}
-                >
-                  <img src={fake} />
-                  <span>
-                    <h5>{chat?.chatName}</h5>
-                    <p>{chat?.latestMessage?.content}</p>
-                  </span>
-                  <strong>
-                    <p>{chat?.createdAt?.slice(11, 16)}</p>
-                  </strong>
-                </section>
-              ))}
+          <div className="flex flex-col h-full ">
+            <div className="p-4 flex flex-col">
+              <h3 className="text-lg font-semibold mb-2">Messages</h3>
+              <input
+                type="text"
+                className="w-full py-2 px-4 border border-gray-300 rounded mb-2"
+                placeholder="Search"
+              />
+              <span className="text-sm text-gray-500">
+                Sort by: <strong className="text-blue-500">Newest</strong>
+              </span>
+            </div>
+            <div className="p-4">
+              <div className="flex flex-col gap-4">
+                {allChat.map((chat, index) => (
+                  <div
+                    key={index}
+                    className={`p-4 cursor-pointer ${
+                      selectedChatIndex === index ? "bg-blue-100" : ""
+                    }`}
+                    onClick={() => selectedChat(index, chat)}
+                  >
+                    <img src={fake} className="w-10 h-10 rounded-full" />
+                    <div>
+                      <h5 className="text-lg font-semibold">
+                        {chat?.chatName}
+                      </h5>
+                      <p className="text-gray-500">
+                        {chat?.latestMessage?.content}
+                      </p>
+                    </div>
+                    <strong className="text-gray-500">
+                      {chat?.createdAt?.slice(11, 16)}
+                    </strong>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
 
-        {messageSection && <Message userList={userSelected} /> }
+        {messageSection && <Message userList={userSelected} />}
 
         {grouptChatName && (
-          <div className="complete_section_for_group">
-            <div className="chat-box">
-              <h2>
-                Create a Chat Group{" "}
-                <span>
-                  <IoCloseOutline onClick={() => handleGroup()} />
-                </span>{" "}
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border border-gray-400 bg-gray-200 p-4 rounded-lg">
+            <div className="">
+              <h2 className="flex justify-between items-center">
+                Create a Chat Group
+                <IoCloseOutline
+                  className="cursor-pointer"
+                  onClick={() => handleGroup()}
+                />
               </h2>
-              <div className="input-group">
-                <label htmlFor="chatName">Chat Name:</label>
+              <div className="input-group mb-4">
+                <label htmlFor="chatName" className="block font-semibold mb-1">
+                  Chat Name:
+                </label>
                 <input
                   type="text"
                   id="chatName"
                   value={chatName}
                   onChange={(e) => setChatName(e.target.value)}
+                  className="w-full py-2 px-4 border border-gray-300 rounded"
                 />
               </div>
-              <div className="input-group">
-                <label htmlFor="user">User:</label>
+              <div className="input-group mb-4">
+                <label htmlFor="user" className="block font-semibold mb-1">
+                  User:
+                </label>
                 <input
                   type="text"
                   id="user"
@@ -190,6 +208,7 @@ const Dash = () => {
                   onChange={handleUserInputChange}
                   onClick={() => handleInputClick()}
                   onKeyDown={handleKeyDown}
+                  className="w-full py-2 px-4 border border-gray-300 rounded"
                 />
                 {showUserList && (
                   <ul className="user-suggestions">
@@ -197,6 +216,7 @@ const Dash = () => {
                       <li
                         key={index}
                         onClick={() => handleUserSelection(filteredUser)}
+                        className="cursor-pointer py-2 px-4 hover:bg-gray-100"
                       >
                         {filteredUser}
                       </li>
@@ -204,7 +224,12 @@ const Dash = () => {
                   </ul>
                 )}
               </div>
-              <button onClick={() => createGroupChat()}>Create</button>
+              <button
+                onClick={() => createGroupChat()}
+                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+              >
+                Create
+              </button>
             </div>
           </div>
         )}

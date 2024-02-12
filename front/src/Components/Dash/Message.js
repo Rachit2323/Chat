@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from "react";
-import "./Dash.css";
-import "./Message.css";
 import { IoCloseSharp } from "react-icons/io5";
 import { CiLink } from "react-icons/ci";
 import { IoSendSharp } from "react-icons/io5";
@@ -158,76 +156,78 @@ const Message = ({ userList }) => {
   return (
     <>
       {closeMessagesWindow ? (
-        <div className="right_all_message">
-          <div className="right_top_bar">
-            <section>
-              <span>
-                <img src={fake} />
-                <strong>
-                  <h4>{userList.chatName}</h4>
-                  <p>Online</p>
-                </strong>
-              </span>
-              <IoIosInformationCircle onClick={() => groupInformation()} />
-            </section>
-
-            <IoCloseSharp onClick={() => closeMessages()} />
+        <div className="bg-white rounded-lg shadow-md p-4 w-full h-full relative">
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex items-center">
+              <img src={fake} className="w-8 h-8 mr-2" alt="User" />
+              <div>
+                <h4 className="font-bold">{userList.chatName}</h4>
+                <p>Online</p>
+              </div>
+            </div>
+            <IoIosInformationCircle onClick={() => groupInformation()} className=" cursor-pointer "/>
           </div>
-          <div className="message_section">
-            <ScrollableFeed className="message_alligned">
+          <div className="overflow-y-auto max-h-[635px] h-[100%] gap-3 flex w-full flex-col">
+            <ScrollableFeed className="gap-2 flex flex-col border border-gray-300 pt-2">
               {allUserMessage.map((message) => (
                 <div
                   key={message._id}
+                  className={`px-2 py-2 w-[170px] rounded-lg ${
+                    message.sender?._id === userdetail._id
+                      ? "bg-green-500 text-white"
+                      : "bg-blue-200"
+                  }`}
                   style={{
-                    backgroundColor:
-                      message.sender?._id === userdetail._id
-                        ? "green"
-                        : "skyblue",
-                    border:
-                      message.sender?._id === userdetail._id
-                        ? "2px solid green"
-                        : "2 px solid skyblue",
                     marginLeft:
-                      message.sender?._id === userdetail._id ? "86%" : "1%",
+                      message.sender?._id === userdetail._id ? "83%" : "1%",
                   }}
-                  className="message_send"
                 >
                   {message.content}
                 </div>
               ))}
             </ScrollableFeed>
           </div>
-          <div className="input_message">
-            <CiLink style={{ color: "rgba(0, 0, 0, 0.45)" }} />
+          <div className="flex items-center mt-4">
+            <CiLink className="text-gray-500  w-[30px] h-[30px]" />
             <input
+              className="flex-grow ml-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 px-3 py-2"
               placeholder="Type your Message here ..."
               value={message}
               onChange={(e) => setMessage(e.target.value)}
             />
-
             <IoSendSharp
-              style={{ color: "green" }}
+              className="text-green-500 cursor-pointer ml-2 w-[30px] h-[30px]"
               onClick={() => sendMessageToEnd()}
             />
           </div>
           {groupInformationShow && (
-            <div className="information_table_outer">
+          <div className="mt-4 p-4 bg-gray-200 rounded-lg absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
               <span onClick={() => handlecloseModal()}>
-                <IoCloseOutline />
+                <IoCloseOutline className=" cursor-pointer " />
               </span>
 
-              <label htmlFor="members">Members:</label>
-              <div className="members">
+              <label htmlFor="members" className="block mb-2">
+                Members:
+              </label>
+              <div className="flex flex-wrap">
                 {userList.users.map((user, index) => (
-                  <div key={index} className="member">
+                  <div
+                    key={index}
+                    className="bg-gray-300 rounded-md p-1 mr-1 mb-1 flex items-center"
+                  >
                     <span>{user.name}</span>
-                    <button onClick={() => handleUserRemove(user._id)}>
+                    <button
+                      onClick={() => handleUserRemove(user._id)}
+                      className="ml-2 text-red-500"
+                    >
                       X
                     </button>
                   </div>
                 ))}
               </div>
-              <label htmlFor="addUser">Add User:</label>
+              <label htmlFor="addUser" className="block mt-4 mb-2">
+                Add User:
+              </label>
               <input
                 type="text"
                 id="addUser"
@@ -236,14 +236,21 @@ const Message = ({ userList }) => {
                 onChange={handleUserInputChange}
                 onClick={() => handleInputClick()}
                 onKeyDown={handleKeyDown}
+                className="w-full px-3 py-2 mx-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
               />
-              <button onClick={() => AddUserGroup(user)}>Update</button>
+              <button
+                onClick={() => AddUserGroup(user)}
+                className="bg-green-500 text-white px-4 py-2 rounded-md mt-2"
+              >
+                Update
+              </button>
               {showUserList && (
-                <ul className="user-suggestions">
+                <ul className="user-suggestions mt-2">
                   {filteredUsers.map((filteredUser, index) => (
                     <li
                       key={index}
                       onClick={() => handleUserSelection(filteredUser)}
+                      className="cursor-pointer hover:bg-gray-100 py-1 px-2 rounded-md"
                     >
                       {filteredUser}
                     </li>
