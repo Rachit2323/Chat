@@ -25,11 +25,14 @@ const accessChat = async (req, res) => {
     select: "name pic email",
   });
 
+ const user=await User.findOne({_id:req.userId});
+ const user1=await User.findOne({_id:userId});
+ console.log('users',user1,user)
   if (isChat.length > 0) {
     res.send({data:isChat[0],success:true});
   } else {
     var chatData = {
-      chatName: "sender",
+      chatName: `${req.userId}-${user.name},${userId}-${user1.name}`,
       isGroupChat: false,
       users: [req.userId, userId],
     };

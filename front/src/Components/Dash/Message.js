@@ -19,7 +19,7 @@ import { useNavigate } from "react-router-dom";
 import EmptyScreen from "./Emptyscreen.js";
 const END = "http://localhost:4000";
 var socket;
-const Message = ({ userList }) => {
+const Message = ({ userList,chatNameSelected }) => {
   const {
     fetchChatSuccess,
     allchat,
@@ -162,7 +162,7 @@ const Message = ({ userList }) => {
             <div className="flex items-center">
               <img src={fake} className="w-8 h-8 mr-2" alt="User" />
               <div>
-                <h4 className="font-bold">{userList.chatName}</h4>
+                <h4 className="font-bold">{chatNameSelected}</h4>
                 <p>Online</p>
               </div>
             </div>

@@ -54,7 +54,6 @@ const Dash = () => {
 
   useEffect(() => {
     if (fetchChatSuccess) {
-
       setAllChat(allchat);
     }
   }, [fetchChatSuccess]);
@@ -68,13 +67,14 @@ const Dash = () => {
 
   const [messageSection, setMessageSection] = useState(false);
   const [userSelected, setUserSelected] = useState(null);
+  const[chatNameSelected,setChatNameSelected]=useState("");
   const [searchUser, setSearchUser] = useState(false);
 
-  const selectedChat = (index, chat) => {
-
+  const selectedChat = (index, chat,name) => {
     setSelectedChatIndex(index);
 
     setUserSelected(chat);
+    setChatNameSelected(name);
     setMessageSection(true);
   };
 
@@ -139,17 +139,15 @@ const Dash = () => {
     dispatch(accessChat(userId));
     dispatch(fetchChat());
     // setAllChat(allchat);
-    
   };
 
-  useEffect(()=>{
-   if(accessChatSuccess)
-   {
-    setAllChat([...allChat,accessChatData]);
-    setSearchUser(false);
-    selectedChat(allChat.length,accessChatData)
-   }
-  },[accessChatSuccess])
+  useEffect(() => {
+    if (accessChatSuccess) {
+      setAllChat([...allChat, accessChatData]);
+      setSearchUser(false);
+      selectedChat(allChat.length, accessChatData);
+    }
+  }, [accessChatSuccess]);
   const handleChange = (e) => {
     setSearchTerm(e.target.value);
     handleUserSearch(e.target.value);
@@ -162,6 +160,25 @@ const Dash = () => {
     localStorage.clear();
     navigate("/");
   };
+  function parseUserIdAndName(data) {
+    try {
+      const parts = data.split(",");
+      if (parts.length !== 2) {
+        throw new Error(
+          "Invalid data format: expected two parts separated by comma"
+        );
+      }
+
+      const [userid1, username1] = parts[0].split("-");
+      const [userid2, username2] = parts[1].split("-");
+
+      if (userid1 === userdetail._id) return username1;
+      else return username2;
+      // console.log(userid1, username1, userid2, username2);
+    } catch (error) {
+      // console.error("Error parsing user ID and name:", error.message);
+    }
+  }
 
   return (
     <>
@@ -227,7 +244,9 @@ const Dash = () => {
                     className={`p-2 flex rounded items-center justify-center gap-2 cursor-pointer ${
                       selectedChatIndex === index ? "bg-blue-100" : ""
                     }`}
-                    onClick={() => selectedChat(index, chat)}
+                    onClick={() => selectedChat(index, chat, chat.isGroupChat
+                      ? chat?.chatName
+                      : parseUserIdAndName(chat?.chatName))}
                   >
                     <img
                       src={fake}
@@ -235,7 +254,9 @@ const Dash = () => {
                     />
                     <div className="w-1/2">
                       <h5 className="text-xl font-semibold">
-                        {chat?.chatName}
+                        {chat.isGroupChat
+                          ? chat?.chatName
+                          : parseUserIdAndName(chat?.chatName)}
                       </h5>
                       <p className="text-lg text-gray-500">
                         {chat?.latestMessage?.content}
@@ -251,7 +272,7 @@ const Dash = () => {
           </div>
         </div>
 
-        {messageSection && <Message userList={userSelected} />}
+        {messageSection && <Message userList={userSelected} chatNameSelected={chatNameSelected}/>}
 
         {grouptChatName && (
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border border-gray-400 bg-gray-200 p-4 rounded-lg">
