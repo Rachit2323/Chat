@@ -72,11 +72,12 @@ const fetchChats = async (req, res) => {
 };
 
 const createGroupChat = async (req, res) => {
+
   if (!req.body.selectedUsersId || !req.body.chatName) {
     return res.status(400).send({ message: "Please Fill all the feilds" });
   }
 
-  var users = req.body.selectedUsersId;
+  var users = req.body.selectedUsers.map(user => user.id);
 
   users.push(req.userId);
 
@@ -130,27 +131,32 @@ const renameGroup = async (req, res) => {
 };
 
 const removeFromGroup = async (req, res) => {
-  const { chatId, userId } = req.body;
+  try {
+    const { chatId, userId } = req.body;
 
-  const removed = await Chat.findByIdAndUpdate(
-    chatId,
-    {
-      $pull: { users: userId },
-    },
-    {
-      new: true,
+    const removed = await Chat.findByIdAndUpdate(
+      chatId,
+      {
+        $pull: { users: userId },
+      },
+      {
+        new: true,
+      }
+    )
+      .populate("users", "-password")
+      .populate("groupAdmin", "-password");
+
+    if (!removed) {
+      res.status(404).json({ success: false, message: "Chat Not Found" });
+      return;
     }
-  )
-    .populate("users", "-password")
-    .populate("groupAdmin", "-password");
 
-  if (!removed) {
-    res.status(404);
-    throw new Error("Chat Not Found");
-  } else {
-    res.json(removed);
+    res.json({ success: true, data:removed });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 const addToGroup = async (req, res) => {
   const { chatId, userId } = req.body;

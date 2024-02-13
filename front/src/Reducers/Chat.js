@@ -15,7 +15,9 @@ const initialState = {
   sendMesageToBackSuccess:false,
   sendMesageToBackData:[],
   accessChatSuccess:false,
-  accessChatData:[]
+  accessChatData:[],
+  RemoveusercreateGroupSuccess:false,
+  RemoveusercreateGroupData:[]
 };
 
 
@@ -355,7 +357,30 @@ const chatSlice = createSlice({
       .addCase(accessChat.rejected, (state) => {
         state.loading = true;
         state.accessChatSuccess = false;
-      })      
+      })  
+      .addCase(RemoveusercreateGroup.pending, (state) => {
+        state.loading = true;
+        state.RemoveusercreateGroupSuccess = false;
+      })
+      .addCase(RemoveusercreateGroup.fulfilled, (state, action) => {
+        state.loading = false;
+
+        if (action?.payload?.error) {
+          state.loading = true;
+          state.sendMesageToBackSuccess = action.payload.success;
+        } else {
+          state.loading = false;
+          state.RemoveusercreateGroupSuccess = action?.payload?.success;
+          state.RemoveusercreateGroupData = action?.payload?.data;
+        }
+      })
+     
+      .addCase(RemoveusercreateGroup.rejected, (state) => {
+        state.loading = true;
+        state.RemoveusercreateGroupSuccess = false;
+      })     
+      
+
       
   },
 });

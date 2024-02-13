@@ -51,6 +51,14 @@ const Dash = () => {
     dispatch(allUserList());
     dispatch(userInfo());
   }, []);
+ 
+
+  useEffect(()=>{
+    if(createGroupSuccess)
+    {
+      setAllChat([...allChat,createGroupData])
+    }
+  },[createGroupSuccess])
 
   useEffect(() => {
     if (fetchChatSuccess) {
@@ -67,10 +75,10 @@ const Dash = () => {
 
   const [messageSection, setMessageSection] = useState(false);
   const [userSelected, setUserSelected] = useState(null);
-  const[chatNameSelected,setChatNameSelected]=useState("");
+  const [chatNameSelected, setChatNameSelected] = useState("");
   const [searchUser, setSearchUser] = useState(false);
 
-  const selectedChat = (index, chat,name) => {
+  const selectedChat = (index, chat, name) => {
     setSelectedChatIndex(index);
 
     setUserSelected(chat);
@@ -83,36 +91,43 @@ const Dash = () => {
   };
 
   const handleUserInputChange = (e) => {
+
     const input = e.target.value;
     setUser(input);
-    setFilteredUsers(
-      allUser
-        .map((user) => user.name)
-        .filter((name) => name.toLowerCase().includes(input.toLowerCase()))
-    );
+    
+    // setFilteredUsers(
+    //   allUser.filter((user) =>
+    //     user.name.toLowerCase().includes(input.toLowerCase())
+    //   ).map(({ id, name }) => ({ id, name }))
+    // );
+
     setShowUserList(true);
   };
 
   const createGroupChat = () => {
-    console.log(selectedUsers, selectedUsersId, chatName);
     dispatch(createGroup({ selectedUsers, selectedUsersId, chatName }));
+    setGroupChatName(false);
   };
 
   useEffect(() => {
-    setFilteredUsers(allUser?.map((user) => user.name));
+    if (allUser) {
+      setFilteredUsers(
+        allUser.map((user) => ({ id: user._id, name: user.name }))
+      );
+    }
   }, [allUser]);
 
   const handleInputClick = () => {
     setShowUserList(true);
   };
-
   const handleUserSelection = (selectedUser) => {
-    const selectedUserData = allUser.find((user) => user.name === selectedUser);
-    setSelectedUsers([...selectedUsers, selectedUser]);
-    setSelectedUsersId([...selectedUsersId, selectedUserData._id]);
-    setFilteredUsers(filteredUsers.filter((name) => name !== selectedUser));
-  };
 
+    const selectedUserData = allUser.find((user) => user.id === selectedUser.id && user.name === selectedUser.name);
+    setSelectedUsers([...selectedUsers, selectedUser]);
+    setSelectedUsersId([...selectedUsersId, selectedUserData]);
+    setFilteredUsers(filteredUsers.filter((user) => user.id !== selectedUser.id));
+  };
+  
   const handleKeyDown = (e) => {
     if (e.key === "Backspace") {
       const lastSelectedUser = selectedUsers[selectedUsers.length - 1];
@@ -148,6 +163,7 @@ const Dash = () => {
       selectedChat(allChat.length, accessChatData);
     }
   }, [accessChatSuccess]);
+
   const handleChange = (e) => {
     setSearchTerm(e.target.value);
     handleUserSearch(e.target.value);
@@ -172,8 +188,8 @@ const Dash = () => {
       const [userid1, username1] = parts[0].split("-");
       const [userid2, username2] = parts[1].split("-");
 
-      if (userid1 === userdetail._id) return username1;
-      else return username2;
+      if (userid1 === userdetail._id) return username2;
+      else return username1;
       // console.log(userid1, username1, userid2, username2);
     } catch (error) {
       // console.error("Error parsing user ID and name:", error.message);
@@ -187,16 +203,16 @@ const Dash = () => {
           <div className="p-4 h-full flex flex-col items-center justify-center w-1/4 border-r border-gray-400">
             <div className="flex items-center w-full h-full gap-4 flex-col mb-4 mt-4 justify-center ">
               <TiGroupOutline
-                className="w-[30px] h-[30px] cursor-pointer"
+                className="w-[40px] h-[40px] cursor-pointer"
                 onClick={() => handleGroup()}
               />
               <img
                 src={fake}
                 className="w-10 h-10 rounded-full cursor-pointer transform transition-transform hover:scale-110"
               />
-              <IoSettingsOutline className="w-[30px] h-[30px] cursor-pointer" />
+              <IoSettingsOutline className="w-[40px] h-[40px] cursor-pointer" />
               <CiLogout
-                className="w-[30px] h-[30px] cursor-pointer"
+                className="w-[40px] h-[40px] cursor-pointer"
                 onClick={() => handleLogout()}
               />
 
@@ -237,16 +253,23 @@ const Dash = () => {
               </span>
             </div>
             <div className="p-2">
-              <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 border border-gray-600">
+
                 {allChat.map((chat, index) => (
                   <div
                     key={index}
                     className={`p-2 flex rounded items-center justify-center gap-2 cursor-pointer ${
                       selectedChatIndex === index ? "bg-blue-100" : ""
                     }`}
-                    onClick={() => selectedChat(index, chat, chat.isGroupChat
-                      ? chat?.chatName
-                      : parseUserIdAndName(chat?.chatName))}
+                    onClick={() =>
+                      selectedChat(
+                        index,
+                        chat,
+                        chat.isGroupChat
+                          ? chat?.chatName
+                          : parseUserIdAndName(chat?.chatName)
+                      )
+                    }
                   >
                     <img
                       src={fake}
@@ -272,7 +295,12 @@ const Dash = () => {
           </div>
         </div>
 
-        {messageSection && <Message userList={userSelected} chatNameSelected={chatNameSelected}/>}
+        {messageSection && (
+          <Message
+            userListData={userSelected}
+            chatNameSelected={chatNameSelected}
+          />
+        )}
 
         {grouptChatName && (
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border border-gray-400 bg-gray-200 p-4 rounded-lg">
@@ -303,7 +331,8 @@ const Dash = () => {
                 <input
                   type="text"
                   id="user"
-                  value={selectedUsers.join(", ")}
+                  value={selectedUsers.map(user => user.name).join(", ")}
+
                   onChange={handleUserInputChange}
                   onClick={() => handleInputClick()}
                   onKeyDown={handleKeyDown}
@@ -311,15 +340,18 @@ const Dash = () => {
                 />
                 {showUserList && (
                   <ul className="user-suggestions">
-                    {filteredUsers.map((filteredUser, index) => (
-                      <li
-                        key={index}
-                        onClick={() => handleUserSelection(filteredUser)}
-                        className="cursor-pointer py-2 px-4 hover:bg-gray-100"
-                      >
-                        {filteredUser}
-                      </li>
-                    ))}
+                    {filteredUsers.map(
+                      (filteredUser, index) =>
+                        (filteredUser.id !== userdetail._id )&& (
+                          <li
+                            key={index}
+                            onClick={() => handleUserSelection(filteredUser)}
+                            className="cursor-pointer py-2 px-4 hover:bg-gray-100"
+                          >
+                            {filteredUser.name}
+                          </li>
+                        )
+                    )}
                   </ul>
                 )}
               </div>

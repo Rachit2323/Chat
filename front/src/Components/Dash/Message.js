@@ -11,6 +11,7 @@ import {
   AddusercreateGroup,
   sendMesageToBack,
   fetchAllChat,
+  fetchChat,
 } from "../../Reducers/Chat.js";
 import { userInfo } from "../../Reducers/auth.js";
 import io from "socket.io-client";
@@ -19,7 +20,7 @@ import { useNavigate } from "react-router-dom";
 import EmptyScreen from "./Emptyscreen.js";
 const END = "http://localhost:4000";
 var socket;
-const Message = ({ userList,chatNameSelected }) => {
+const Message = ({ userListData, chatNameSelected }) => {
   const {
     fetchChatSuccess,
     allchat,
@@ -31,6 +32,8 @@ const Message = ({ userList,chatNameSelected }) => {
     fetchMessageSuccess,
     sendMesageToBackData,
     sendMesageToBackSuccess,
+    RemoveusercreateGroupSuccess,
+    RemoveusercreateGroupData,
   } = useSelector((state) => state.chat);
 
   useEffect(() => {
@@ -39,7 +42,7 @@ const Message = ({ userList,chatNameSelected }) => {
 
   const [allUserMessage, setAllUserMessage] = useState([]);
 
-  const naviagte = useNavigate();
+  const [userList, setUserList] = useState(userListData);
 
   useEffect(() => {
     if (fetchMessageSuccess) {
@@ -103,6 +106,7 @@ const Message = ({ userList,chatNameSelected }) => {
 
   const handleUserRemove = (userId) => {
     dispatch(RemoveusercreateGroup({ userId, chatId }));
+    dispatch(fetchChat());
   };
 
   const AddUserGroup = (userId) => {
@@ -131,7 +135,7 @@ const Message = ({ userList,chatNameSelected }) => {
   const handleUserSelection = (selectedUser) => {
     const selectedUserData = allUser.find((user) => user.name === selectedUser);
     setSelectedUsers([...selectedUsers, selectedUser]);
-    setSelectedUsersId([...selectedUsersId, selectedUserData._id]);
+    setSelectedUsersId([...selectedUsersId, selectedUserData]);
     setFilteredUsers(filteredUsers.filter((name) => name !== selectedUser));
   };
 
@@ -147,6 +151,13 @@ const Message = ({ userList,chatNameSelected }) => {
       }
     }
   };
+
+  useEffect(() => {
+    if (RemoveusercreateGroupSuccess) {
+      setUserList(RemoveusercreateGroupData);
+      setGroupInformationShow(false);
+    }
+  }, [RemoveusercreateGroupSuccess]);
 
   const [closeMessagesWindow, setCloseMessageWindow] = useState(true);
 
@@ -214,14 +225,14 @@ const Message = ({ userList,chatNameSelected }) => {
                 Members:
               </label>
               <div className="flex flex-wrap">
-                {userList.users.map((user, index) => (
+                {userList.users?.map((user, index) => (
                   <div
                     key={index}
                     className="bg-gray-300 rounded-md p-1 mr-1 mb-1 flex items-center"
                   >
-                    <span>{user.name}</span>
+                    <span>{user?.name}</span>
                     <button
-                      onClick={() => handleUserRemove(user._id)}
+                      onClick={() => handleUserRemove(user?._id)}
                       className="ml-2 text-red-500"
                     >
                       X
@@ -240,7 +251,7 @@ const Message = ({ userList,chatNameSelected }) => {
                 onChange={handleUserInputChange}
                 onClick={() => handleInputClick()}
                 onKeyDown={handleKeyDown}
-                className="w-full px-3 py-2 mx-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                className="w-full px-3 py-2  border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
               />
               <button
                 onClick={() => AddUserGroup(user)}
