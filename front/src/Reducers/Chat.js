@@ -17,7 +17,9 @@ const initialState = {
   accessChatSuccess:false,
   accessChatData:[],
   RemoveusercreateGroupSuccess:false,
-  RemoveusercreateGroupData:[]
+  RemoveusercreateGroupData:[],
+  AddusercreateGroupSuccess:false,
+  AddusercreateGroupData:[],
 };
 
 
@@ -151,7 +153,7 @@ export const fetchChat = createAsyncThunk("fetchChat", async (body, thunkAPI) =>
 
   export const AddusercreateGroup = createAsyncThunk("AddusercreateGroup", async ({ userId,chatId}) => {
     try {
-      console.log(userId,chatId)
+
       const token = localStorage.getItem('token');
       const result = await fetch(`${API}chats/groupadd`, {
         method: "PUT",
@@ -367,7 +369,7 @@ const chatSlice = createSlice({
 
         if (action?.payload?.error) {
           state.loading = true;
-          state.sendMesageToBackSuccess = action.payload.success;
+          state.RemoveusercreateGroupSuccess = action.payload.success;
         } else {
           state.loading = false;
           state.RemoveusercreateGroupSuccess = action?.payload?.success;
@@ -378,9 +380,30 @@ const chatSlice = createSlice({
       .addCase(RemoveusercreateGroup.rejected, (state) => {
         state.loading = true;
         state.RemoveusercreateGroupSuccess = false;
+      })  
+      .addCase(AddusercreateGroup.pending, (state) => {
+        state.loading = true;
+        state.AddusercreateGroupSuccess = false;
+      })
+      .addCase(AddusercreateGroup.fulfilled, (state, action) => {
+        state.loading = false;
+
+        if (action?.payload?.error) {
+          state.loading = true;
+          state.AddusercreateGroupSuccess = action.payload.success;
+        } else {
+          state.loading = false;
+          state.AddusercreateGroupSuccess = action?.payload?.success;
+          state.AddusercreateGroupData = action?.payload?.data;
+        }
+      })
+     
+      .addCase(AddusercreateGroup.rejected, (state) => {
+        state.loading = true;
+        state.AddusercreateGroupSuccess = false;
       })     
       
-
+      
       
   },
 });

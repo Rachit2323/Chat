@@ -120,6 +120,7 @@ const Dash = () => {
   const handleInputClick = () => {
     setShowUserList(true);
   };
+
   const handleUserSelection = (selectedUser) => {
 
     const selectedUserData = allUser.find((user) => user.id === selectedUser.id && user.name === selectedUser.name);
@@ -149,6 +150,7 @@ const Dash = () => {
     );
     setFilteredUsersSearch(filtered);
   };
+  
 
   const handleMakeChat = (userId) => {
     dispatch(accessChat(userId));

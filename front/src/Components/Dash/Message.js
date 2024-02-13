@@ -34,6 +34,8 @@ const Message = ({ userListData, chatNameSelected }) => {
     sendMesageToBackSuccess,
     RemoveusercreateGroupSuccess,
     RemoveusercreateGroupData,
+    AddusercreateGroupSuccess,
+    AddusercreateGroupData,
   } = useSelector((state) => state.chat);
 
   useEffect(() => {
@@ -87,6 +89,7 @@ const Message = ({ userListData, chatNameSelected }) => {
     socket.emit("join chat", chatId);
   }, [chatId]);
 
+
   useEffect(() => {
     socket.on("message recived", (newMessage) => {
       dispatch(fetchAllChat(chatId));
@@ -109,23 +112,33 @@ const Message = ({ userListData, chatNameSelected }) => {
     dispatch(fetchChat());
   };
 
-  const AddUserGroup = (userId) => {
-    dispatch(AddusercreateGroup({ userId: selectedUsersId, chatId }));
+  const AddUserGroup = () => {
+
+    dispatch(AddusercreateGroup({ userId: selectedUsers, chatId }));
+    setGroupInformationShow(false);
+    setSelectedUsers([]);
   };
 
   const handleUserInputChange = (e) => {
     const input = e.target.value;
     setUser(input);
-    setFilteredUsers(
-      allUser
-        .map((user) => user.name)
-        .filter((name) => name.toLowerCase().includes(input.toLowerCase()))
-    );
-    setShowUserList(true);
+    // setFilteredUsers(
+    //   allUser
+    //     .map((user) => user.name)
+    //     .filter((name) => name.toLowerCase().includes(input.toLowerCase()))
+    // );
+    setShowUserList(false);
+ 
+
+   
   };
 
   useEffect(() => {
-    setFilteredUsers(allUser.map((user) => user.name));
+    if (allUser) {
+      setFilteredUsers(
+        allUser.map((user) => ({ id: user._id, name: user.name }))
+      );
+    }
   }, [allUser]);
 
   const handleInputClick = () => {
@@ -133,11 +146,26 @@ const Message = ({ userListData, chatNameSelected }) => {
   };
 
   const handleUserSelection = (selectedUser) => {
-    const selectedUserData = allUser.find((user) => user.name === selectedUser);
-    setSelectedUsers([...selectedUsers, selectedUser]);
-    setSelectedUsersId([...selectedUsersId, selectedUserData]);
-    setFilteredUsers(filteredUsers.filter((name) => name !== selectedUser));
+
+    const selectedUserData = allUser.find(
+      (user) => user.id === selectedUser.id && user.name === selectedUser.name
+    );
+
+    setSelectedUsers(selectedUser);
+    // setSelectedUsersId([...selectedUsersId, selectedUserData]);
+    setFilteredUsers(
+      filteredUsers.filter((user) => user.id !== selectedUser.id)
+    );
   };
+
+
+  useEffect(()=>{
+   if(AddusercreateGroupSuccess)
+   {
+    setUserList(AddusercreateGroupData);
+   }
+  },[AddusercreateGroupSuccess])
+
 
   const handleKeyDown = (e) => {
     if (e.key === "Backspace") {
@@ -247,29 +275,36 @@ const Message = ({ userListData, chatNameSelected }) => {
                 type="text"
                 id="addUser"
                 placeholder="Enter username"
-                value={selectedUsers.join(", ")}
+                // value={selectedUsers?.map((user) => user?.name).join(", ")}
+                value={selectedUsers.name}
                 onChange={handleUserInputChange}
                 onClick={() => handleInputClick()}
                 onKeyDown={handleKeyDown}
                 className="w-full px-3 py-2  border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
               />
               <button
-                onClick={() => AddUserGroup(user)}
+                onClick={() => AddUserGroup()}
                 className="bg-green-500 text-white px-4 py-2 rounded-md mt-2"
               >
                 Update
               </button>
               {showUserList && (
                 <ul className="user-suggestions mt-2">
-                  {filteredUsers.map((filteredUser, index) => (
-                    <li
-                      key={index}
-                      onClick={() => handleUserSelection(filteredUser)}
-                      className="cursor-pointer hover:bg-gray-100 py-1 px-2 rounded-md"
-                    >
-                      {filteredUser}
-                    </li>
-                  ))}
+                  {filteredUsers.map(
+                    (filteredUser, index) =>
+                      filteredUser.id !== userdetail._id &&
+                      !userList.users.some(
+                        (user) => user._id === filteredUser.id
+                      ) && (
+                        <li
+                          key={index}
+                          onClick={() => handleUserSelection(filteredUser)}
+                          className="cursor-pointer py-2 px-4 hover:bg-gray-100"
+                        >
+                          {filteredUser.name}
+                        </li>
+                      )
+                  )}
                 </ul>
               )}
             </div>
