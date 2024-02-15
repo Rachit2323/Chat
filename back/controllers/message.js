@@ -4,11 +4,11 @@ const Message = require("../models/message.js");
 
 const allMessages = async (req, res) => {
   try {
-
+     console.log('query',req.query.chatId);
     const messages = await Message.find({ chat: req.query.chatId })
       .populate("sender", "name pic email")
       .populate("chat");
-
+   console.log('messa',messages);
     res.json({ data: messages, success: true });
   } catch (error) {
     res.status(400);

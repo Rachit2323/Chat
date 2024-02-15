@@ -21,6 +21,7 @@ import EmptyScreen from "./Emptyscreen.js";
 const END = "http://localhost:4000";
 var socket;
 const Message = ({ userListData, chatNameSelected }) => {
+
   const {
     fetchChatSuccess,
     allchat,
@@ -47,10 +48,15 @@ const Message = ({ userListData, chatNameSelected }) => {
   const [userList, setUserList] = useState(userListData);
 
   useEffect(() => {
+    setUserList(userListData);
+  }, [userListData]);
+
+  useEffect(() => {
     if (fetchMessageSuccess) {
       setAllUserMessage(fetchChats);
     }
   }, [fetchMessageSuccess]);
+
   const { userInfoSuccess, userdetail } = useSelector((state) => state.user);
 
   const [socketConnectd, setSocketConnected] = useState(false);
@@ -67,6 +73,7 @@ const Message = ({ userListData, chatNameSelected }) => {
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [showUserList, setShowUserList] = useState(false);
   const [message, setMessage] = useState("");
+  const [groupInformationShow, setGroupInformationShow] = useState(false);
 
   useEffect(() => {
     if (userList) {
@@ -78,6 +85,7 @@ const Message = ({ userListData, chatNameSelected }) => {
     dispatch(sendMesageToBack({ content: message, chatId }));
     setMessage("");
   };
+
   useEffect(() => {
     if (sendMesageToBackSuccess) {
       socket.emit("new message", sendMesageToBackData);
@@ -89,15 +97,29 @@ const Message = ({ userListData, chatNameSelected }) => {
     socket.emit("join chat", chatId);
   }, [chatId]);
 
-
   useEffect(() => {
     socket.on("message recived", (newMessage) => {
       dispatch(fetchAllChat(chatId));
       setAllUserMessage([...allUserMessage, newMessage]);
     });
-  });
+  },[]);
 
-  const [groupInformationShow, setGroupInformationShow] = useState(false);
+
+  useEffect(() => {
+    console.log('allUserMessage', allUserMessage);
+  
+    // Add event listener for "message received"
+    socket.on("message received", (newMessage) => {
+      setAllUserMessage(prevMessages => [...prevMessages, newMessage]);
+    });
+  
+    // Cleanup function to remove the event listener when the component unmounts
+    return () => {
+      socket.off("message received");
+    };
+  }); // Empty dependency array since we don't depend on any variables inside useEffect
+  
+
 
   const groupInformation = () => {
     setGroupInformationShow(true);
@@ -113,7 +135,6 @@ const Message = ({ userListData, chatNameSelected }) => {
   };
 
   const AddUserGroup = () => {
-
     dispatch(AddusercreateGroup({ userId: selectedUsers, chatId }));
     setGroupInformationShow(false);
     setSelectedUsers([]);
@@ -128,9 +149,6 @@ const Message = ({ userListData, chatNameSelected }) => {
     //     .filter((name) => name.toLowerCase().includes(input.toLowerCase()))
     // );
     setShowUserList(false);
- 
-
-   
   };
 
   useEffect(() => {
@@ -146,7 +164,6 @@ const Message = ({ userListData, chatNameSelected }) => {
   };
 
   const handleUserSelection = (selectedUser) => {
-
     const selectedUserData = allUser.find(
       (user) => user.id === selectedUser.id && user.name === selectedUser.name
     );
@@ -158,14 +175,11 @@ const Message = ({ userListData, chatNameSelected }) => {
     );
   };
 
-
-  useEffect(()=>{
-   if(AddusercreateGroupSuccess)
-   {
-    setUserList(AddusercreateGroupData);
-   }
-  },[AddusercreateGroupSuccess])
-
+  useEffect(() => {
+    if (AddusercreateGroupSuccess) {
+      setUserList(AddusercreateGroupData);
+    }
+  }, [AddusercreateGroupSuccess]);
 
   const handleKeyDown = (e) => {
     if (e.key === "Backspace") {
