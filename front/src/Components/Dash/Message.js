@@ -20,8 +20,7 @@ import { useNavigate } from "react-router-dom";
 import EmptyScreen from "./Emptyscreen.js";
 const END = "http://localhost:4000";
 var socket;
-const Message = ({ userListData, chatNameSelected }) => {
-
+const Message = ({ userListData, chatNameSelected, setMessageSection }) => {
   const {
     fetchChatSuccess,
     allchat,
@@ -81,7 +80,8 @@ const Message = ({ userListData, chatNameSelected }) => {
     }
   }, [userList]);
 
-  const sendMessageToEnd = () => {
+  const sendMessageToEnd = (e) => {
+    e.preventDefault();
     dispatch(sendMesageToBack({ content: message, chatId }));
     setMessage("");
   };
@@ -102,24 +102,23 @@ const Message = ({ userListData, chatNameSelected }) => {
       dispatch(fetchAllChat(chatId));
       setAllUserMessage([...allUserMessage, newMessage]);
     });
-  },[]);
+  });
 
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    console.log('allUserMessage', allUserMessage);
-  
-    // Add event listener for "message received"
-    socket.on("message received", (newMessage) => {
-      setAllUserMessage(prevMessages => [...prevMessages, newMessage]);
-    });
-  
-    // Cleanup function to remove the event listener when the component unmounts
-    return () => {
-      socket.off("message received");
-    };
-  }); // Empty dependency array since we don't depend on any variables inside useEffect
-  
+  // useEffect(() => {
+  //   console.log('allUserMessage', allUserMessage);
 
+  //   // Add event listener for "message received"
+  //   socket.on("message received", (newMessage) => {
+  //     setAllUserMessage(prevMessages => [...prevMessages, newMessage]);
+  //   });
+
+  //   // Cleanup function to remove the event listener when the component unmounts
+  //   return () => {
+  //     socket.off("message received");
+  //   };
+  // }); // Empty dependency array since we don't depend on any variables inside useEffect
 
   const groupInformation = () => {
     setGroupInformationShow(true);
@@ -133,6 +132,10 @@ const Message = ({ userListData, chatNameSelected }) => {
     dispatch(RemoveusercreateGroup({ userId, chatId }));
     dispatch(fetchChat());
   };
+
+  useEffect(() => {
+    dispatch(fetchChat());
+  }, [userList]);
 
   const AddUserGroup = () => {
     dispatch(AddusercreateGroup({ userId: selectedUsers, chatId }));
@@ -201,134 +204,134 @@ const Message = ({ userListData, chatNameSelected }) => {
     }
   }, [RemoveusercreateGroupSuccess]);
 
-  const [closeMessagesWindow, setCloseMessageWindow] = useState(true);
-
   const closeMessages = () => {
-    setCloseMessageWindow(false);
+    setMessageSection(false);
   };
+
+
 
   return (
     <>
-      {closeMessagesWindow ? (
-        <div className="bg-white rounded-lg shadow-md p-4 w-3/4 h-full relative">
-          <div className="flex justify-between items-center mb-4">
-            <div className="flex items-center">
-              <img src={fake} className="w-8 h-8 mr-2" alt="User" />
-              <div>
-                <h4 className="font-bold">{chatNameSelected}</h4>
-                <p>Online</p>
-              </div>
+      <div className="bg-white rounded-lg shadow-md p-4 w-full lg:w-full h-full relative">
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex items-center">
+            <img src={fake} className="w-8 h-8 mr-2" alt="User" />
+            <div>
+              <h4 className="font-bold">{chatNameSelected}</h4>
+              <p>Online</p>
             </div>
-            <IoIosInformationCircle
+          </div>
+          <span className="flex gap-2 justify-center items-center ">
+         {userListData.isGroupChat&&(   <IoIosInformationCircle
               onClick={() => groupInformation()}
               className="w-[30px] h-[30px] cursor-pointer "
+            />)}
+            <IoCloseOutline
+              className="cursor-pointer  w-[30px] h-[30px]"
+              onClick={() => closeMessages()}
             />
-          </div>
-          <div className="overflow-y-auto max-h-[635px] h-[100%] gap-3 flex w-full flex-col scrollbar-hide">
-            <ScrollableFeed className="gap-2 flex flex-col border border-gray-300 pt-2">
-              {allUserMessage.map((message) => (
+          </span>
+        </div>
+        <div className="overflow-y-auto max-h-[635px] h-[100%] gap-3 flex w-full flex-col scrollbar-hide">
+          <ScrollableFeed className="gap-2 flex flex-col border border-gray-300 pt-2">
+            {allUserMessage.map((message) => (
+              <div
+                key={message._id}
+                className={`px-2 py-2 w-[170px] rounded-lg ${
+                  message.sender?._id === userdetail._id
+                    ? "bg-green-500 text-white"
+                    : "bg-blue-200"
+                }`}
+                style={{
+                  marginLeft:
+                    message.sender?._id === userdetail._id ? "83%" : "1%",
+                }}
+              >
+                {message.content}
+              </div>
+            ))}
+          </ScrollableFeed>
+        </div>
+        <div className="flex items-center mt-4">
+          <CiLink className="text-gray-500  w-[30px] h-[30px]" />
+          <input
+            className="flex-grow ml-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 px-3 py-2"
+            placeholder="Type your Message here ..."
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+          />
+          <IoSendSharp
+            className="text-green-500 cursor-pointer ml-2 w-[30px] h-[30px]"
+            onClick={(e) => sendMessageToEnd(e)}
+          />
+        </div>
+        {groupInformationShow && (
+          <div className="mt-4 p-4 bg-gray-200 rounded-lg absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <span onClick={() => handlecloseModal()}>
+              <IoCloseOutline className=" cursor-pointer " />
+            </span>
+
+            <label htmlFor="members" className="block mb-2">
+              Members:
+            </label>
+            <div className="flex flex-wrap">
+              {userList.users?.map((user, index) => (
                 <div
-                  key={message._id}
-                  className={`px-2 py-2 w-[170px] rounded-lg ${
-                    message.sender?._id === userdetail._id
-                      ? "bg-green-500 text-white"
-                      : "bg-blue-200"
-                  }`}
-                  style={{
-                    marginLeft:
-                      message.sender?._id === userdetail._id ? "83%" : "1%",
-                  }}
+                  key={index}
+                  className="bg-gray-300 rounded-md p-1 mr-1 mb-1 flex items-center"
                 >
-                  {message.content}
+                  <span>{user?.name}</span>
+                  <button
+                    onClick={() => handleUserRemove(user?._id)}
+                    className="ml-2 text-red-500"
+                  >
+                    X
+                  </button>
                 </div>
               ))}
-            </ScrollableFeed>
-          </div>
-          <div className="flex items-center mt-4">
-            <CiLink className="text-gray-500  w-[30px] h-[30px]" />
-            <input
-              className="flex-grow ml-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 px-3 py-2"
-              placeholder="Type your Message here ..."
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-            />
-            <IoSendSharp
-              className="text-green-500 cursor-pointer ml-2 w-[30px] h-[30px]"
-              onClick={() => sendMessageToEnd()}
-            />
-          </div>
-          {groupInformationShow && (
-            <div className="mt-4 p-4 bg-gray-200 rounded-lg absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-              <span onClick={() => handlecloseModal()}>
-                <IoCloseOutline className=" cursor-pointer " />
-              </span>
-
-              <label htmlFor="members" className="block mb-2">
-                Members:
-              </label>
-              <div className="flex flex-wrap">
-                {userList.users?.map((user, index) => (
-                  <div
-                    key={index}
-                    className="bg-gray-300 rounded-md p-1 mr-1 mb-1 flex items-center"
-                  >
-                    <span>{user?.name}</span>
-                    <button
-                      onClick={() => handleUserRemove(user?._id)}
-                      className="ml-2 text-red-500"
-                    >
-                      X
-                    </button>
-                  </div>
-                ))}
-              </div>
-              <label htmlFor="addUser" className="block mt-4 mb-2">
-                Add User:
-              </label>
-              <input
-                type="text"
-                id="addUser"
-                placeholder="Enter username"
-                // value={selectedUsers?.map((user) => user?.name).join(", ")}
-                value={selectedUsers.name}
-                onChange={handleUserInputChange}
-                onClick={() => handleInputClick()}
-                onKeyDown={handleKeyDown}
-                className="w-full px-3 py-2  border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-              />
-              <button
-                onClick={() => AddUserGroup()}
-                className="bg-green-500 text-white px-4 py-2 rounded-md mt-2"
-              >
-                Update
-              </button>
-              {showUserList && (
-                <ul className="user-suggestions mt-2">
-                  {filteredUsers.map(
-                    (filteredUser, index) =>
-                      filteredUser.id !== userdetail._id &&
-                      !userList.users.some(
-                        (user) => user._id === filteredUser.id
-                      ) && (
-                        <li
-                          key={index}
-                          onClick={() => handleUserSelection(filteredUser)}
-                          className="cursor-pointer py-2 px-4 hover:bg-gray-100"
-                        >
-                          {filteredUser.name}
-                        </li>
-                      )
-                  )}
-                </ul>
-              )}
             </div>
-          )}
-        </div>
-      ) : (
-        <>
-          <EmptyScreen />
-        </>
-      )}
+            <label htmlFor="addUser" className="block mt-4 mb-2">
+              Add User:
+            </label>
+            <input
+              type="text"
+              id="addUser"
+              placeholder="Enter username"
+              // value={selectedUsers?.map((user) => user?.name).join(", ")}
+              value={selectedUsers.name}
+              onChange={handleUserInputChange}
+              onClick={() => handleInputClick()}
+              onKeyDown={handleKeyDown}
+              className="w-full px-3 py-2  border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+            />
+            <button
+              onClick={() => AddUserGroup()}
+              className="bg-green-500 text-white px-4 py-2 rounded-md mt-2"
+            >
+              Update
+            </button>
+            {showUserList && (
+              <ul className="user-suggestions mt-2">
+                {filteredUsers.map(
+                  (filteredUser, index) =>
+                    filteredUser.id !== userdetail._id &&
+                    !userList.users.some(
+                      (user) => user._id === filteredUser.id
+                    ) && (
+                      <li
+                        key={index}
+                        onClick={() => handleUserSelection(filteredUser)}
+                        className="cursor-pointer py-2 px-4 hover:bg-gray-100"
+                      >
+                        {filteredUser.name}
+                      </li>
+                    )
+                )}
+              </ul>
+            )}
+          </div>
+        )}
+      </div>
     </>
   );
 };

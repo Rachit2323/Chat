@@ -193,7 +193,7 @@ export const fetchChat = createAsyncThunk("fetchChat", async (body, thunkAPI) =>
       }
   
       const data = await result.json();
-      console.log('data',data);
+
   
       return data;
     } catch (error) {
