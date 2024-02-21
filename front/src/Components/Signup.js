@@ -27,7 +27,7 @@ const Signup = () => {
     if (!successsignup&&errorsignup) {
 
       toast.error(errorsignup);
-      dispatch(signupUser(formData));
+      // dispatch(signupUser(formData));
     }
   }, [successsignup,errorsignup]);
 
