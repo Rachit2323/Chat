@@ -14,7 +14,7 @@ const cors = require("cors");
 app.use(express.json());
 
 const corsOptions = {
-  origin: "http://localhost:3000",
+  origin: ["http://localhost:3000", "https://chat-y117.vercel.app"],
   credentials: true,
   optionSuccessStatus: 200,
 };
@@ -51,9 +51,10 @@ const server = app.listen(4000, () => {
 const io = require("socket.io")(server, {
   pingTimeout: 60000,
   cors: {
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000", "https://chat-y117.vercel.app"],
   },
 });
+
 
 io.on("connection",(socket)=>{
 
