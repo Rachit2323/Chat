@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { IoCloseSharp } from "react-icons/io5";
 import { CiLink } from "react-icons/ci";
 import { IoSendSharp } from "react-icons/io5";
@@ -14,12 +14,12 @@ import {
   fetchChat,
 } from "../../Reducers/Chat.js";
 import { userInfo } from "../../Reducers/auth.js";
-import io from "socket.io-client";
-import ScrollableFeed from "react-scrollable-feed";
-import { useNavigate } from "react-router-dom";
-import EmptyScreen from "./Emptyscreen.js";
-const END = "http://localhost:4000";
-var socket;
+import socketIo from "socket.io-client";
+import { jwtDecode } from "jwt-decode";
+
+import ScrollToBottom from "react-scroll-to-bottom";
+const END = "http://localhost:4000/";
+
 const Message = ({ userListData, chatNameSelected, setMessageSection }) => {
   const {
     fetchChatSuccess,
@@ -38,33 +38,6 @@ const Message = ({ userListData, chatNameSelected, setMessageSection }) => {
     AddusercreateGroupData,
   } = useSelector((state) => state.chat);
 
-  useEffect(() => {
-    dispatch(userInfo());
-  }, []);
-
-  const [allUserMessage, setAllUserMessage] = useState([]);
-
-  const [userList, setUserList] = useState(userListData);
-
-  useEffect(() => {
-    setUserList(userListData);
-  }, [userListData]);
-
-  useEffect(() => {
-    if (fetchMessageSuccess) {
-      setAllUserMessage(fetchChats);
-    }
-  }, [fetchMessageSuccess]);
-
-  const { userInfoSuccess, userdetail } = useSelector((state) => state.user);
-
-  const [socketConnectd, setSocketConnected] = useState(false);
-  useEffect(() => {
-    socket = io(END);
-    socket.emit("setup", userdetail);
-    socket.on("connection", () => setSocketConnected(true));
-  }, [userInfoSuccess]);
-
   const [chatId, setChatId] = useState(null);
   const [user, setUser] = useState("");
   const [selectedUsers, setSelectedUsers] = useState([]);
@@ -73,6 +46,58 @@ const Message = ({ userListData, chatNameSelected, setMessageSection }) => {
   const [showUserList, setShowUserList] = useState(false);
   const [message, setMessage] = useState("");
   const [groupInformationShow, setGroupInformationShow] = useState(false);
+  const [activeUser, setActiveUser] = useState();
+  const [userDetailsId, setuserDetailsId] = useState();
+  const [allUserMessage, setAllUserMessage] = useState([]);
+
+  const [userList, setUserList] = useState(userListData);
+  useEffect(() => {
+    dispatch(userInfo());
+  }, []);
+
+  useEffect(() => {
+    const getUserIdFromToken = () => {
+      const token = localStorage.getItem("token");
+
+      if (token) {
+        try {
+          const decodedToken = jwtDecode(token);
+          const userId = decodedToken.userId;
+          return userId;
+        } catch (error) {}
+      }
+    };
+
+    const userIdFromToken = getUserIdFromToken();
+
+    setActiveUser(userIdFromToken);
+  }, []);
+
+  const { userInfoSuccess, userdetail } = useSelector((state) => state.user);
+
+  const socket = socketIo(END, { transports: ["websocket"] });
+
+  useEffect(() => {
+    socket.on("connect", () => {});
+    return () => {};
+  }, []);
+
+  useEffect(() => {
+    setUserList(userListData);
+  }, [userListData]);
+
+  useEffect(() => {
+    if (fetchMessageSuccess) {
+      // dispatch(fetchAllChat(chatId));
+      // console.log(fetchChats);
+      const makeSenderObjArray = fetchChats.map((chat) => ({
+        senderId: chat.sender._id,
+        content: chat.content,
+      }));
+
+      setAllUserMessage(makeSenderObjArray);
+    }
+  }, [fetchMessageSuccess, chatNameSelected, userListData, fetchChats]);
 
   useEffect(() => {
     if (userList) {
@@ -80,45 +105,43 @@ const Message = ({ userListData, chatNameSelected, setMessageSection }) => {
     }
   }, [userList]);
 
+  useEffect(() => {
+    if (userInfoSuccess) {
+      setuserDetailsId(userdetail._id);
+    }
+  }, [userInfoSuccess]);
+
   const sendMessageToEnd = (e) => {
     e.preventDefault();
+
+    socket.emit("sendbackmsg", { message, chatId, userDetailsId });
     dispatch(sendMesageToBack({ content: message, chatId }));
+    dispatch(fetchAllChat(chatId));
     setMessage("");
   };
 
   useEffect(() => {
-    if (sendMesageToBackSuccess) {
-      socket.emit("new message", sendMesageToBackData);
-    }
-  }, [sendMesageToBackSuccess]);
+    socket.on("receivemsg", ({ message, chatId, userDetailsId }) => {
+      // dispatch(fetchAllChat(chatId))
+      const newMessage = {
+        senderId: userDetailsId,
+        content: message,
+      };
+      // console.log(fetchChats);
 
-  useEffect(() => {
-    dispatch(fetchAllChat(chatId));
-    socket.emit("join chat", chatId);
-  }, [chatId]);
-
-  useEffect(() => {
-    socket.on("message recived", (newMessage) => {
-      dispatch(fetchAllChat(chatId));
-      setAllUserMessage([...allUserMessage, newMessage]);
+      setAllUserMessage((prevMessages) => [...prevMessages, newMessage]);
     });
-  });
+    return () => {
+      socket.off();
+    };
+  }, [allUserMessage, fetchChats]);
 
-  const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   console.log('allUserMessage', allUserMessage);
-
-  //   // Add event listener for "message received"
-  //   socket.on("message received", (newMessage) => {
-  //     setAllUserMessage(prevMessages => [...prevMessages, newMessage]);
-  //   });
-
-  //   // Cleanup function to remove the event listener when the component unmounts
-  //   return () => {
-  //     socket.off("message received");
-  //   };
-  // }); // Empty dependency array since we don't depend on any variables inside useEffect
+  useEffect(() => {
+    if (chatId) {
+      dispatch(fetchAllChat(chatId));
+      // socket.emit("joinchat", { chatId });
+    }
+  }, [chatId, chatNameSelected, userListData]);
 
   const groupInformation = () => {
     setGroupInformationShow(true);
@@ -146,11 +169,7 @@ const Message = ({ userListData, chatNameSelected, setMessageSection }) => {
   const handleUserInputChange = (e) => {
     const input = e.target.value;
     setUser(input);
-    // setFilteredUsers(
-    //   allUser
-    //     .map((user) => user.name)
-    //     .filter((name) => name.toLowerCase().includes(input.toLowerCase()))
-    // );
+
     setShowUserList(false);
   };
 
@@ -172,7 +191,7 @@ const Message = ({ userListData, chatNameSelected, setMessageSection }) => {
     );
 
     setSelectedUsers(selectedUser);
-    // setSelectedUsersId([...selectedUsersId, selectedUserData]);
+
     setFilteredUsers(
       filteredUsers.filter((user) => user.id !== selectedUser.id)
     );
@@ -208,8 +227,6 @@ const Message = ({ userListData, chatNameSelected, setMessageSection }) => {
     setMessageSection(false);
   };
 
-
-
   return (
     <>
       <div className="bg-white rounded-lg shadow-md p-4 w-full lg:w-full h-full relative">
@@ -222,10 +239,12 @@ const Message = ({ userListData, chatNameSelected, setMessageSection }) => {
             </div>
           </div>
           <span className="flex gap-2 justify-center items-center ">
-         {userListData.isGroupChat&&(   <IoIosInformationCircle
-              onClick={() => groupInformation()}
-              className="w-[30px] h-[30px] cursor-pointer "
-            />)}
+            {userListData.isGroupChat && (
+              <IoIosInformationCircle
+                onClick={() => groupInformation()}
+                className="w-[30px] h-[30px] cursor-pointer "
+              />
+            )}
             <IoCloseOutline
               className="cursor-pointer  w-[30px] h-[30px]"
               onClick={() => closeMessages()}
@@ -233,25 +252,34 @@ const Message = ({ userListData, chatNameSelected, setMessageSection }) => {
           </span>
         </div>
         <div className="overflow-y-auto max-h-[635px] h-[100%] gap-3 flex w-full flex-col scrollbar-hide">
-          <ScrollableFeed className="gap-2 flex flex-col border border-gray-300 pt-2">
-            {allUserMessage.map((message) => (
+          <ScrollToBottom
+            checkInterval={17}
+            initialScrollBehavior="auto"
+            atEnd={true}
+            atBottom={true}
+            sticky={true}
+            mode="bottom"
+            className="gap-2 flex flex-col border border-gray-300 pt-2 h-full w-full"
+          >
+            {allUserMessage?.map((message, idx) => (
               <div
-                key={message._id}
+                key={idx}
                 className={`px-2 py-2 w-[170px] rounded-lg ${
-                  message.sender?._id === userdetail._id
+                  message?.senderId === activeUser
                     ? "bg-green-500 text-white"
                     : "bg-blue-200"
                 }`}
                 style={{
-                  marginLeft:
-                    message.sender?._id === userdetail._id ? "83%" : "1%",
+                  marginLeft: message?.senderId === activeUser ? "83%" : "1%",
+                  marginBottom: "4px",
                 }}
               >
-                {message.content}
+                {message?.content}
               </div>
             ))}
-          </ScrollableFeed>
+          </ScrollToBottom>
         </div>
+
         <div className="flex items-center mt-4">
           <CiLink className="text-gray-500  w-[30px] h-[30px]" />
           <input
@@ -262,7 +290,7 @@ const Message = ({ userListData, chatNameSelected, setMessageSection }) => {
           />
           <IoSendSharp
             className="text-green-500 cursor-pointer ml-2 w-[30px] h-[30px]"
-            onClick={(e) => sendMessageToEnd(e)}
+            onClick={sendMessageToEnd}
           />
         </div>
         {groupInformationShow && (

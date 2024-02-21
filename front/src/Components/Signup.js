@@ -109,6 +109,9 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import img1 from "../Image/bg.jpeg";
 import { signupUser } from "../Reducers/auth.js";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -203,6 +206,7 @@ const Signup = () => {
           </strong>
         </span>
       </div>
+      <ToastContainer />
     </div>
   );
 };

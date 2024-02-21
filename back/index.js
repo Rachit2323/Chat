@@ -55,32 +55,16 @@ const io = require("socket.io")(server, {
   },
 });
 
-io.on("connection", (socket) => {
-  socket.on("setup", (userData) => {
-    socket.join(userData._id);
-    socket.emit("connected");
-  });
+io.on("connection",(socket)=>{
 
-  socket.on("join chat", (room) => {
-    socket.join(room);
+  // socket.on("joinchat", ({chatId}) => {
+  //   socket.join(chatId);
+  //   console.log('room',chatId);
+  //   socket.emit("connected");
+  // });
 
-    socket.emit("connected");
-  });
-
-  socket.on("new message", (newMessage) => {
-    var chat = newMessage.chat;
-
-    // if(!chat.users)
-    // {
-    //   return console.log("chat.user not defined")
-    // }
-    chat.users.forEach((user) => {
-      // if(user._id===newMessage.sender._id) return;
-      socket.in(user._id).emit("message recived", newMessage);
-    });
-  });
-
-  // socket.off("setup",()=>{
-  //   socket.leave(userData._id);
-  // })
-});
+  socket.on('sendbackmsg',({message,chatId,userDetailsId})=>{
+    // console.log(message,userDetailsId);
+    io.emit('receivemsg',{message,chatId,userDetailsId})
+  })
+})

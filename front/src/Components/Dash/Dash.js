@@ -16,8 +16,8 @@ import { accessChat } from "../../Reducers/Chat.js";
 
 import io from "socket.io-client";
 import { useNavigate } from "react-router-dom";
-const END = "http://localhost:4000";
-var socket;
+
+
 
 const Dash = () => {
   const [allChat, setAllChat] = useState([]);
@@ -51,14 +51,12 @@ const Dash = () => {
     dispatch(allUserList());
     dispatch(userInfo());
   }, []);
- 
 
-  useEffect(()=>{
-    if(createGroupSuccess)
-    {
-      setAllChat([...allChat,createGroupData])
+  useEffect(() => {
+    if (createGroupSuccess) {
+      setAllChat([...allChat, createGroupData]);
     }
-  },[createGroupSuccess])
+  }, [createGroupSuccess]);
 
   useEffect(() => {
     if (fetchChatSuccess) {
@@ -66,12 +64,8 @@ const Dash = () => {
     }
   }, [fetchChatSuccess]);
 
-  const [socketConnectd, setSocketConnected] = useState(false);
-  useEffect(() => {
-    socket = io(END);
-    socket.emit("setup", userdetail);
-    socket.on("connection", () => setSocketConnected(true));
-  }, [userInfoSuccess]);
+
+
 
   const [messageSection, setMessageSection] = useState(false);
   const [userSelected, setUserSelected] = useState(null);
@@ -91,10 +85,9 @@ const Dash = () => {
   };
 
   const handleUserInputChange = (e) => {
-
     const input = e.target.value;
     setUser(input);
-    
+
     // setFilteredUsers(
     //   allUser.filter((user) =>
     //     user.name.toLowerCase().includes(input.toLowerCase())
@@ -122,13 +115,16 @@ const Dash = () => {
   };
 
   const handleUserSelection = (selectedUser) => {
-
-    const selectedUserData = allUser.find((user) => user.id === selectedUser.id && user.name === selectedUser.name);
+    const selectedUserData = allUser.find(
+      (user) => user.id === selectedUser.id && user.name === selectedUser.name
+    );
     setSelectedUsers([...selectedUsers, selectedUser]);
     setSelectedUsersId([...selectedUsersId, selectedUserData]);
-    setFilteredUsers(filteredUsers.filter((user) => user.id !== selectedUser.id));
+    setFilteredUsers(
+      filteredUsers.filter((user) => user.id !== selectedUser.id)
+    );
   };
-  
+
   const handleKeyDown = (e) => {
     if (e.key === "Backspace") {
       const lastSelectedUser = selectedUsers[selectedUsers.length - 1];
@@ -150,7 +146,6 @@ const Dash = () => {
     );
     setFilteredUsersSearch(filtered);
   };
-  
 
   const handleMakeChat = (userId) => {
     dispatch(accessChat(userId));
@@ -197,94 +192,105 @@ const Dash = () => {
       // console.error("Error parsing user ID and name:", error.message);
     }
   }
-  
 
   return (
     <>
       <div className="flex w-screen h-screen fixed">
-
-      <div className={`lg:w-1/4 border-r border-gray-200 flex flex-col lg:flex-row  md:${messageSection ? 'hidden' : 'flex'}`}>
-
-
-  <div className="p-4 h-full flex items-center justify-center w-full lg:w-1/4 border-r border-gray-400">
-    <div className="flex items-center w-full h-full gap-4 flex-col mb-4 mt-4 justify-center">
-      <TiGroupOutline className="w-[40px] h-[40px] cursor-pointer" onClick={() => handleGroup()} />
-      <img src={fake} className="w-10 h-10 rounded-full cursor-pointer transform transition-transform hover:scale-110" />
-      <IoSettingsOutline className="w-[40px] h-[40px] cursor-pointer" />
-      <CiLogout className="w-[40px] h-[40px] cursor-pointer" onClick={() => handleLogout()} />
-    </div>
-  </div>
-
-  <div className="w-full lg:w-3/4">
-    <div className="p-4 flex flex-col relative">
-      <h3 className="text-lg font-semibold mb-2">Chats</h3>
-      <input
-        type="text"
-        className="w-full py-2 px-4 border border-gray-300 rounded mb-2"
-        placeholder="Search"
-        value={searchTerm}
-        onChange={handleChange}
-      />
-      {searchUser && (
-        <ul className="absolute top-full lg:top-[68%] bg-gray-100 border w-full lg:w-[89%] lg:border-gray-300 divide-y divide-gray-300 rounded py-1 px-1  cursor-pointer text-sm">
-          {filteredUsersSearch.map(
-            (user) =>
-              userdetail._id !== user._id && (
-                <li
-                  key={user._id}
-                  className="py-1"
-                  onClick={() => handleMakeChat(user._id)}
-                >
-                  {user.name} - {user.email}
-                </li>
-              )
-          )}
-        </ul>
-      )}
-
-      <span className="text-sm text-gray-500">
-        Sort by: <strong className="text-blue-500">Newest</strong>
-      </span>
-    </div>
-    <div className="p-2">
-      <div className="flex flex-col gap-4 border border-gray-600">
-        {allChat.map((chat, index) => (
-          <div
-            key={index}
-            className={`p-2 flex rounded items-center justify-center gap-2 cursor-pointer ${selectedChatIndex === index ? "bg-blue-100" : ""}`}
-            onClick={() =>
-              selectedChat(
-                index,
-                chat,
-                chat.isGroupChat
-                  ? chat?.chatName
-                  : parseUserIdAndName(chat?.chatName)
-              )
-            }
-          >
-            <img
-              src={fake}
-              className="w-[65px] h-[65px] rounded-full"
-            />
-            <div className="w-1/2">
-              <h5 className="text-xl font-semibold">
-                {chat.isGroupChat
-                  ? chat?.chatName
-                  : parseUserIdAndName(chat?.chatName)}
-              </h5>
-              <p className="text-lg text-gray-500">
-                {chat?.latestMessage?.content}
-              </p>
+        <div
+          className={`lg:w-1/4 border-r border-gray-200 flex flex-col lg:flex-row  md:${
+            messageSection ? "hidden" : "flex"
+          }`}
+        >
+          <div className="p-4 h-full flex items-center justify-center w-full lg:w-1/4 border-r border-gray-400">
+            <div className="flex items-center w-full h-full gap-4 flex-col mb-4 mt-4 justify-center">
+              <TiGroupOutline
+                className="w-[40px] h-[40px] cursor-pointer"
+                onClick={() => handleGroup()}
+              />
+              <img
+                src={fake}
+                className="w-10 h-10 rounded-full cursor-pointer transform transition-transform hover:scale-110"
+              />
+              <IoSettingsOutline className="w-[40px] h-[40px] cursor-pointer" />
+              <CiLogout
+                className="w-[40px] h-[40px] cursor-pointer"
+                onClick={() => handleLogout()}
+              />
             </div>
-            <strong className="w-1/4 text-gray-500">
-              {chat?.createdAt?.slice(11, 16)}
-            </strong>
           </div>
-        ))}
-      </div>
-    </div>
-  </div>
-</div>
+
+          <div className="w-full lg:w-3/4">
+            <div className="p-4 flex flex-col relative">
+              <h3 className="text-lg font-semibold mb-2">Chats</h3>
+              <input
+                type="text"
+                className="w-full py-2 px-4 border border-gray-300 rounded mb-2"
+                placeholder="Search"
+                value={searchTerm}
+                onChange={handleChange}
+              />
+              {searchUser && (
+                <ul className="absolute top-full lg:top-[68%] bg-gray-100 border w-full lg:w-[89%] lg:border-gray-300 divide-y divide-gray-300 rounded py-1 px-1  cursor-pointer text-sm">
+                  {filteredUsersSearch.map(
+                    (user) =>
+                      userdetail._id !== user._id && (
+                        <li
+                          key={user._id}
+                          className="py-1"
+                          onClick={() => handleMakeChat(user._id)}
+                        >
+                          {user.name} - {user.email}
+                        </li>
+                      )
+                  )}
+                </ul>
+              )}
+
+              <span className="text-sm text-gray-500">
+                Sort by: <strong className="text-blue-500">Newest</strong>
+              </span>
+            </div>
+            <div className="p-2">
+              <div className="flex flex-col gap-4 border border-gray-600">
+                {allChat.map((chat, index) => (
+                  <div
+                    key={index}
+                    className={`p-2 flex rounded items-center justify-center gap-2 cursor-pointer ${
+                      selectedChatIndex === index ? "bg-blue-100" : ""
+                    }`}
+                    onClick={() =>
+                      selectedChat(
+                        index,
+                        chat,
+                        chat.isGroupChat
+                          ? chat?.chatName
+                          : parseUserIdAndName(chat?.chatName)
+                      )
+                    }
+                  >
+                    <img
+                      src={fake}
+                      className="w-[65px] h-[65px] rounded-full"
+                    />
+                    <div className="w-1/2">
+                      <h5 className="text-xl font-semibold">
+                        {chat.isGroupChat
+                          ? chat?.chatName
+                          : parseUserIdAndName(chat?.chatName)}
+                      </h5>
+                      <p className="text-lg text-gray-500">
+                        {chat?.latestMessage?.content}
+                      </p>
+                    </div>
+                    <strong className="w-1/4 text-gray-500">
+                      {chat?.createdAt?.slice(11, 16)}
+                    </strong>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* <div className="w-1/4 border-r border-gray-200 flex ">
           <div className="p-4 h-full flex flex-col items-center justify-center w-1/4 border-r border-gray-400">
@@ -381,15 +387,19 @@ const Dash = () => {
           </div>
         </div> */}
 
-<div className={`w-full lg:w-3/4 xs:${!messageSection && 'hidden'} sm:${!messageSection && 'hidden'} md:${!messageSection && 'hidden'} `}>
-    {messageSection && (
-      <Message
-        userListData={userSelected}
-        chatNameSelected={chatNameSelected}
-        setMessageSection={setMessageSection}
-      />
-    )}
-  </div>
+        <div
+          className={`w-full lg:w-3/4 xs:${!messageSection && "hidden"} sm:${
+            !messageSection && "hidden"
+          } md:${!messageSection && "hidden"} `}
+        >
+          {messageSection && (
+            <Message
+              userListData={userSelected}
+              chatNameSelected={chatNameSelected}
+              setMessageSection={setMessageSection}
+            />
+          )}
+        </div>
 
         {grouptChatName && (
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border border-gray-400 bg-gray-200 p-4 rounded-lg">
@@ -420,8 +430,7 @@ const Dash = () => {
                 <input
                   type="text"
                   id="user"
-                  value={selectedUsers.map(user => user.name).join(", ")}
-
+                  value={selectedUsers.map((user) => user.name).join(", ")}
                   onChange={handleUserInputChange}
                   onClick={() => handleInputClick()}
                   onKeyDown={handleKeyDown}
@@ -431,7 +440,7 @@ const Dash = () => {
                   <ul className="user-suggestions">
                     {filteredUsers.map(
                       (filteredUser, index) =>
-                        (filteredUser.id !== userdetail._id )&& (
+                        filteredUser.id !== userdetail._id && (
                           <li
                             key={index}
                             onClick={() => handleUserSelection(filteredUser)}
@@ -456,9 +465,6 @@ const Dash = () => {
       </div>
     </>
   );
-
-
-
 };
 
 export default Dash;
