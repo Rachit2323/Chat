@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-const API = "http://localhost:4000/";
+// const API = "http://localhost:4000/";
+const API="https://chat-ecru-six.vercel.app/";
 
 const initialState = {
   loading: false,
