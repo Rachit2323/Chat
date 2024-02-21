@@ -83,8 +83,9 @@ const authSlice = createSlice({
 
         if (action.payload.error) {
           state.successsignup = action.payload.success;
+          state.errorsignup = action.payload.error;
         } else {
-          state.errorsignup = action.payload.message;
+
           state.successsignup = action.payload.success;
         }
       })
@@ -101,6 +102,7 @@ const authSlice = createSlice({
 
         if (action.payload.error) {
           state.successsignin = action.payload.success;
+          state.errorsignin = action.payload.error;
         } else {
           state.errorsignin = action.payload.message;
           state.successsignin = action.payload.success;
@@ -119,6 +121,7 @@ const authSlice = createSlice({
 
         if (action.payload.error) {
           state.successsignin = action.payload.success;
+          
         } else {
           state.userdetail = action.payload.data;
           state.userInfoSuccess = action.payload.success;
