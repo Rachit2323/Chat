@@ -72,6 +72,7 @@ exports.signup = async (req, res) => {
         .json({ success: false, error: "Email already exists" });
     }
 
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({
       name: username,
@@ -134,11 +135,11 @@ exports.signin = async (req, res) => {
       return res.status(404).json({ success: false, error: "User not found" });
     }
 
-    if (!userverify.verified) {
-      return res
-        .status(401)
-        .json({ success: false, error: "Please verify yourself" });
-    }
+    // if (!userverify.verified) {
+    //   return res
+    //     .status(401)
+    //     .json({ success: false, error: "Please verify yourself" });
+    // }
 
     const user = await User.findOne({
       email: email,
@@ -148,7 +149,9 @@ exports.signin = async (req, res) => {
       return res.status(404).json({ success: false, error: "User not found" });
     }
 
+
     const passwordMatch = await bcrypt.compare(password, user.password);
+
 
     if (!passwordMatch) {
       return res

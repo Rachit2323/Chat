@@ -37,6 +37,7 @@ app.get("/", (req, res) => {
 
 mongoose
   .connect("mongodb+srv://Rachit23:UhP8Iiyp4xxptvmM@cluster0.fgnb20h.mongodb.net/chat", {})
+  // .connect("mongodb://localhost:27017/chat", {})
   .then(() => {
     console.log("Connected to MongoDB");
   })
