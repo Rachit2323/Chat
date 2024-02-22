@@ -124,6 +124,7 @@ const Message = ({ userListData, chatNameSelected, setMessageSection }) => {
   useEffect(() => {
     socket.on("receivemsg", ({ message, chatId, userDetailsId }) => {
       // dispatch(fetchAllChat(chatId))
+      console.log('rec',message)
       const newMessage = {
         senderId: userDetailsId,
         content: message,
