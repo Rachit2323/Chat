@@ -64,9 +64,6 @@ const Dash = () => {
     }
   }, [fetchChatSuccess]);
 
-
-
-
   const [messageSection, setMessageSection] = useState(false);
   const [userSelected, setUserSelected] = useState(null);
   const [chatNameSelected, setChatNameSelected] = useState("");

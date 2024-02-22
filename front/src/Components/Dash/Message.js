@@ -18,7 +18,8 @@ import socketIo from "socket.io-client";
 import { jwtDecode } from "jwt-decode";
 
 import ScrollToBottom from "react-scroll-to-bottom";
-const END = "http://localhost:4000/";
+// const END = "http://localhost:4000/";
+const END="https://chat-ecru-six.vercel.app/"
 
 const Message = ({ userListData, chatNameSelected, setMessageSection }) => {
   const {
@@ -79,7 +80,7 @@ const Message = ({ userListData, chatNameSelected, setMessageSection }) => {
 
   useEffect(() => {
     socket.on("connect", () => {});
-    return () => {};
+
   }, []);
 
   useEffect(() => {
@@ -97,7 +98,7 @@ const Message = ({ userListData, chatNameSelected, setMessageSection }) => {
 
       setAllUserMessage(makeSenderObjArray);
     }
-  }, [fetchMessageSuccess, chatNameSelected, userListData, fetchChats]);
+  }, [fetchMessageSuccess]);
 
   useEffect(() => {
     if (userList) {
@@ -116,7 +117,7 @@ const Message = ({ userListData, chatNameSelected, setMessageSection }) => {
 
     socket.emit("sendbackmsg", { message, chatId, userDetailsId });
     dispatch(sendMesageToBack({ content: message, chatId }));
-    dispatch(fetchAllChat(chatId));
+    // dispatch(fetchAllChat(chatId));
     setMessage("");
   };
 
